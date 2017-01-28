@@ -116,6 +116,14 @@ static CKUIThemeDark *darkTheme;
 }
 %end
 
+%hook CKDetailsContactsTableViewCell
+- (UILabel*)nameLabel {
+	UILabel* nl = %orig;
+	nl.textColor = [UIColor whiteColor];
+	return nl;
+}
+%end
+
 %end
 
 
