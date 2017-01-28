@@ -18,6 +18,9 @@
 @interface CKUIBehaviorPhone : CKUIBehavior
 @end
 
+@interface CKUIBehaviorPad : CKUIBehavior
+@end
+
 @interface CKAvatarNavigationBar : UINavigationBar
 @end
 
@@ -26,10 +29,23 @@
 - (void)setStyle:(int)style;
 @end
 
+@interface CKNavigationBarCanvasView : UIView
+- (id)titleView;
+@end
+
 
 static CKUIThemeDark *darkTheme;
 
 %hook CKUIBehaviorPhone
+- (id)theme {
+	if (!darkTheme) {
+		darkTheme = [[%c(CKUIThemeDark) alloc] init];
+	}
+	return darkTheme;
+}
+%end
+
+%hook CKUIBehaviorPad
 - (id)theme {
 	if (!darkTheme) {
 		darkTheme = [[%c(CKUIThemeDark) alloc] init];
@@ -56,3 +72,10 @@ static CKUIThemeDark *darkTheme;
 }
 %end
 
+%hook CKNavigationBarCanvasView
+- (id)titleView {
+	UILabel *tv = %orig;
+	tv.textColor = UIColor.whiteColor;
+	return tv;
+}
+%end
