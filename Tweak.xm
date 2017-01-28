@@ -37,6 +37,20 @@
 - (id)canvasView;
 @end
 
+@interface CKDetailsCell : UITableViewCell
+@end
+
+
+@protocol CKDetailsCell <NSObject>
+@required
++ (NSString *)reuseIdentifier;
++ (BOOL)shouldHighlight;
+@end
+
+@interface CKDetailsGroupNameCell : CKDetailsCell <CKDetailsCell>
+-(UILabel*)textLabel;
+@end
+
 
 static CKUIThemeDark *darkTheme;
 
@@ -93,6 +107,15 @@ static CKUIThemeDark *darkTheme;
 	tv.textColor = UIColor.whiteColor;
 }
 %end
+
+%hook CKDetailsGroupNameCell
+-(UILabel*)textLabel {
+	UILabel* tl = %orig;
+	tl.textColor = [UIColor whiteColor];
+	return tl;
+}
+%end
+
 %end
 
 
