@@ -33,9 +33,15 @@
 - (id)titleView;
 @end
 
+@interface CKComposeNavbarManagerContentView
+- (id)canvasView;
+@end
+
 
 static CKUIThemeDark *darkTheme;
 
+
+%group Phone
 %hook CKUIBehaviorPhone
 - (id)theme {
 	if (!darkTheme) {
@@ -44,7 +50,10 @@ static CKUIThemeDark *darkTheme;
 	return darkTheme;
 }
 %end
+%end
 
+
+%group Pad
 %hook CKUIBehaviorPad
 - (id)theme {
 	if (!darkTheme) {
@@ -53,7 +62,10 @@ static CKUIThemeDark *darkTheme;
 	return darkTheme;
 }
 %end
+%end
 
+
+%group Common
 %hook CKAvatarNavigationBar
 - (void)_setBarStyle:(int)style {
 	%orig(1);
@@ -72,10 +84,26 @@ static CKUIThemeDark *darkTheme;
 }
 %end
 
-%hook CKNavigationBarCanvasView
-- (id)titleView {
-	UILabel *tv = %orig;
+%hook CKComposeNavbarManagerContentView
+- (void)layoutSubviews {
+	%orig;
+	
+	CKNavigationBarCanvasView *cv = [self canvasView];
+	UILabel *tv = (UILabel *)[cv titleView];
 	tv.textColor = UIColor.whiteColor;
-	return tv;
 }
 %end
+%end
+
+
+%ctor {
+	@autoreleasepool {
+		if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+			%init(Pad);
+		} else {
+			%init(Phone);
+		}
+		
+		%init(Common);
+	}
+}

@@ -1,7 +1,7 @@
 Package: com.sticktron.darkmessages
 Name: DarkMessages (iOS 10)
 Depends: mobilesubstrate
-Version: 1.0.1
+Version: 1.0.2
 Architecture: iphoneos-arm
 Description: Native Dark Theme for Messages App!
 Maintainer: Sticktron
