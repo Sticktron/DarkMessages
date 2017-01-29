@@ -1,14 +1,10 @@
 //
 //  DarkMessages
-//  Dark theme for Messages app
-//  For iOS 10
+//  Dark theme for Messages app.
+//  iOS 10
 //
 //  @sticktron
 //
-//  Contributers: HiDaN4
-//
-
-#import "Headers.h"
 
 #ifdef DEBUG
 #define DebugLog(s, ...) \
@@ -17,6 +13,7 @@
 #define DebugLog(s, ...)
 #endif
 
+#import "Headers.h"
 
 static CKUIThemeDark *darkTheme;
 
@@ -44,68 +41,45 @@ static CKUIThemeDark *darkTheme;
 
 %group Common
 
-// fix navbar style
+// fix navbar: style
 %hook CKAvatarNavigationBar
 - (void)_setBarStyle:(int)style {
 	%orig(1);
 }
-- (int)barStyle {
-	return 1;
-}
 %end
 
-// fix contact name label in navbar
+// fix navbar: contact names
 %hook CKAvatarContactNameCollectionReusableView
 - (void)setStyle:(int)style {
 	%orig(3);
 }
-- (int)style {
-	return 3;
+%end
+
+// fix navbar: group names
+%hook CKAvatarTitleCollectionReusableView
+- (void)setStyle:(int)style {
+	%orig(3);
 }
 %end
 
-// fix 'Compose New' label
-%hook CKComposeNavbarManagerContentView
-- (void)layoutSubviews {
-	%orig;
-	
-	CKNavigationBarCanvasView *cv = [self canvasView];
-	UILabel *tv = (UILabel *)[cv titleView];
-	tv.textColor = UIColor.whiteColor;
+// fix navbar new message label
+%hook CKNavigationBarCanvasView
+- (void)setTitleView:(id)titleView {
+	if (titleView && [titleView respondsToSelector:@selector(setTextColor:)]) {
+		[(UILabel *)titleView setTextColor:UIColor.whiteColor];
+	}
+	%orig(titleView);
 }
 %end
 
-// fix group chat title label
-%hook CKDetailsGroupNameCell
-- (UILabel*)textLabel {
-	UILabel* tl = %orig;
-	tl.textColor = UIColor.whiteColor;
-	return tl;
-}
-%end
-
-// fix group chat contact name labels
+// fix group details: contact names
 %hook CKDetailsContactsTableViewCell
-- (UILabel*)nameLabel {
-	UILabel* nl = %orig;
+- (UILabel *)nameLabel {
+	UILabel *nl = %orig;
 	nl.textColor = UIColor.whiteColor;
 	return nl;
 }
 %end
-
-// %hook CKComposeNavbarManagerContentView
-// - (void)layoutSubviews {
-// 	%orig;
-//
-// 	CKNavigationBarCanvasView *cv = [self canvasView];
-// 	if (cv) {
-// 		UILabel *tv = (UILabel *)[cv titleView];
-// 		if (tv) {
-// 			tv.textColor = UIColor.whiteColor;
-// 		}
-// 	}
-// }
-// %end
 
 %end
 
@@ -113,15 +87,11 @@ static CKUIThemeDark *darkTheme;
 
 %ctor {
 	@autoreleasepool {
-		DebugLog(@"Init'ing tweak");
-		
 		darkTheme = [[%c(CKUIThemeDark) alloc] init];
 		
 		if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-			DebugLog(@"Device = iPad");
 			%init(Pad);
 		} else {
-			DebugLog(@"Device = iPhone");
 			%init(Phone);
 		}
 		
