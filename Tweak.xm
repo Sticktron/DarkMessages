@@ -1,85 +1,50 @@
-/*
- * Dark theme for Messages app.
- * iOS 10
- * @sticktron
- */
+//
+//  DarkMessages
+//  Dark theme for Messages app
+//  For iOS 10
+//
+//  @sticktron
+//
+//  Contributers: HiDaN4
+//
 
-@interface CKUITheme : NSObject
-@end
+#import "Headers.h"
 
-@interface CKUIThemeDark : CKUITheme
-@end
-
-@interface CKUIBehavior : NSObject
-@property (nonatomic, readonly) CKUITheme *theme;
-- (id)theme;
-@end
-
-@interface CKUIBehaviorPhone : CKUIBehavior
-@end
-
-@interface CKUIBehaviorPad : CKUIBehavior
-@end
-
-@interface CKAvatarNavigationBar : UINavigationBar
-@end
-
-@interface CKAvatarContactNameCollectionReusableView : UICollectionReusableView
-- (int)style;
-- (void)setStyle:(int)style;
-@end
-
-@interface CKNavigationBarCanvasView : UIView
-- (id)titleView;
-@end
-
-@interface CKComposeNavbarManagerContentView
-- (id)canvasView;
-@end
-
-@interface CKDetailsCell : UITableViewCell
-@end
-
-
-@protocol CKDetailsCell <NSObject>
-@required
-+ (NSString *)reuseIdentifier;
-+ (BOOL)shouldHighlight;
-@end
-
-@interface CKDetailsGroupNameCell : CKDetailsCell <CKDetailsCell>
--(UILabel*)textLabel;
-@end
+#ifdef DEBUG
+#define DebugLog(s, ...) \
+	NSLog(@"[DarkMessages] >> %@", [NSString stringWithFormat:(s), ##__VA_ARGS__])
+#else
+#define DebugLog(s, ...)
+#endif
 
 
 static CKUIThemeDark *darkTheme;
 
+//------------------------------------------------------------------------------
 
 %group Phone
 %hook CKUIBehaviorPhone
 - (id)theme {
-	if (!darkTheme) {
-		darkTheme = [[%c(CKUIThemeDark) alloc] init];
-	}
 	return darkTheme;
 }
 %end
 %end
 
+//------------------------------------------------------------------------------
 
 %group Pad
 %hook CKUIBehaviorPad
 - (id)theme {
-	if (!darkTheme) {
-		darkTheme = [[%c(CKUIThemeDark) alloc] init];
-	}
 	return darkTheme;
 }
 %end
 %end
 
+//------------------------------------------------------------------------------
 
 %group Common
+
+// fix navbar style
 %hook CKAvatarNavigationBar
 - (void)_setBarStyle:(int)style {
 	%orig(1);
@@ -89,6 +54,7 @@ static CKUIThemeDark *darkTheme;
 }
 %end
 
+// fix contact name label in navbar
 %hook CKAvatarContactNameCollectionReusableView
 - (void)setStyle:(int)style {
 	%orig(3);
@@ -98,6 +64,7 @@ static CKUIThemeDark *darkTheme;
 }
 %end
 
+// fix 'Compose New' label
 %hook CKComposeNavbarManagerContentView
 - (void)layoutSubviews {
 	%orig;
@@ -108,30 +75,53 @@ static CKUIThemeDark *darkTheme;
 }
 %end
 
+// fix group chat title label
 %hook CKDetailsGroupNameCell
--(UILabel*)textLabel {
+- (UILabel*)textLabel {
 	UILabel* tl = %orig;
-	tl.textColor = [UIColor whiteColor];
+	tl.textColor = UIColor.whiteColor;
 	return tl;
 }
 %end
 
+// fix group chat contact name labels
 %hook CKDetailsContactsTableViewCell
 - (UILabel*)nameLabel {
 	UILabel* nl = %orig;
-	nl.textColor = [UIColor whiteColor];
+	nl.textColor = UIColor.whiteColor;
 	return nl;
 }
 %end
 
+// %hook CKComposeNavbarManagerContentView
+// - (void)layoutSubviews {
+// 	%orig;
+//
+// 	CKNavigationBarCanvasView *cv = [self canvasView];
+// 	if (cv) {
+// 		UILabel *tv = (UILabel *)[cv titleView];
+// 		if (tv) {
+// 			tv.textColor = UIColor.whiteColor;
+// 		}
+// 	}
+// }
+// %end
+
 %end
 
+//------------------------------------------------------------------------------
 
 %ctor {
 	@autoreleasepool {
+		DebugLog(@"Init'ing tweak");
+		
+		darkTheme = [[%c(CKUIThemeDark) alloc] init];
+		
 		if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+			DebugLog(@"Device = iPad");
 			%init(Pad);
 		} else {
+			DebugLog(@"Device = iPhone");
 			%init(Phone);
 		}
 		
