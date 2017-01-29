@@ -1,12 +1,14 @@
+//
+// Private APIs
+//
+
 @interface CKUITheme : NSObject
 @end
 
 @interface CKUIThemeDark : CKUITheme
 @end
 
-
 @interface CKUIBehavior : NSObject
-@property (nonatomic, readonly) CKUITheme *theme;
 - (id)theme;
 @end
 
@@ -16,35 +18,22 @@
 @interface CKUIBehaviorPad : CKUIBehavior
 @end
 
-
 @interface CKAvatarNavigationBar : UINavigationBar
+- (void)_setBarStyle:(int)style;
 @end
 
-
 @interface CKAvatarContactNameCollectionReusableView : UICollectionReusableView
-- (int)style;
 - (void)setStyle:(int)style;
 @end
 
+@interface CKAvatarTitleCollectionReusableView : UICollectionReusableView
+- (void)setStyle:(int)arg1;
+@end
 
 @interface CKNavigationBarCanvasView : UIView
-- (id)titleView;
+- (void)setTitleView:(id)titleView;
 @end
 
-@interface CKComposeNavbarManagerContentView : UIView
-- (id)canvasView;
-@end
-
-
-@interface CKDetailsCell : UITableViewCell
-@end
-
-@protocol CKDetailsCell <NSObject>
-@required
-+ (NSString *)reuseIdentifier;
-+ (BOOL)shouldHighlight;
-@end
-
-@interface CKDetailsGroupNameCell : CKDetailsCell <CKDetailsCell>
--(UILabel*)textLabel;
+@interface CKDetailsContactsTableViewCell : UITableViewCell
+- (UILabel *)nameLabel;
 @end
