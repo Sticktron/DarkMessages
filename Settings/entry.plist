@@ -1,0 +1,10 @@
+{
+	entry = {
+		bundle = "DarkMessages";
+		cell = PSLinkCell;
+		detail = "DarkMessagesSettingsController";
+		icon = "icon.png";
+		isController = 1;
+		label = "DarkMessages";
+	};
+}
