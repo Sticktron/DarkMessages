@@ -8,25 +8,23 @@
 
 #import "Headers.h"
 
-
-static CFStringRef const kPrefsAppID = CFSTR("com.sticktron.darkmessages");
-
 static CKUIThemeDark *darkTheme;
-static BOOL isEnabled;
+static BOOL isEnabled = YES;
 
 static void loadSettings() {
+	CFStringRef prefsAppID = CFSTR("com.sticktron.darkmessages");
 	NSDictionary *settings = nil;
-	CFPreferencesAppSynchronize(kPrefsAppID);
-	CFArrayRef keyList = CFPreferencesCopyKeyList(kPrefsAppID, kCFPreferencesCurrentUser, kCFPreferencesAnyHost);
-	if (keyList) {
-		settings = (NSDictionary *)CFBridgingRelease(CFPreferencesCopyMultiple(keyList, kPrefsAppID, kCFPreferencesCurrentUser, kCFPreferencesAnyHost));
-		CFRelease(keyList);
-	} else {
-		HBLogWarn(@"Error getting key list for preferences, using default settings !!");
-	}
 	
-	// enabled by default
-	isEnabled = settings[@"Enabled"] ? [settings[@"Enabled"] boolValue] : YES;
+	CFPreferencesAppSynchronize(prefsAppID);
+	CFArrayRef keyList = CFPreferencesCopyKeyList(prefsAppID, kCFPreferencesCurrentUser, kCFPreferencesAnyHost);
+	if (keyList) {
+		settings = (NSDictionary *)CFBridgingRelease(CFPreferencesCopyMultiple(keyList, prefsAppID, kCFPreferencesCurrentUser, kCFPreferencesAnyHost));
+		if (settings && settings[@"Enabled"] && [settings[@"Enabled"] boolValue] == NO) {
+			isEnabled = NO;
+		}
+		CFRelease(keyList);
+	}
+	CFRelease(prefsAppID);
 }
 
 static void reloadSettings(CFNotificationCenterRef center, void *observer, CFStringRef name, const void *object, CFDictionaryRef userInfo) {
@@ -118,6 +116,7 @@ static void reloadSettings(CFNotificationCenterRef center, void *observer, CFStr
 %ctor {
 	@autoreleasepool {
 		loadSettings();
+		
 		darkTheme = [[%c(CKUIThemeDark) alloc] init];
 		
 		// init hooks
