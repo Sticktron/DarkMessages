@@ -1,5 +1,5 @@
 //
-//  DarkMessages Settings
+//  Settings for DarkMessages
 //
 //  @sticktron
 //
@@ -80,6 +80,7 @@
 // Custom Table Cells ----------------------------------------------------------
 
 @interface DMLogoCell : PSTableCell
+@property (nonatomic, strong) UIImageView *logoView;
 @end
 
 @implementation DMLogoCell
@@ -92,16 +93,24 @@
 		
 		NSString *path = @"/Library/PreferenceBundles/DarkMessages.bundle/header.png";
 		UIImage *logo = [UIImage imageWithContentsOfFile:path];
-		UIImageView *logoView = [[UIImageView alloc] initWithImage:logo];
-		logoView.center = self.contentView.center;
-		logoView.contentMode = UIViewContentModeCenter;
-		logoView.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleBottomMargin;
-		[self.contentView addSubview:logoView];
+		
+		// UIImageView *logoView = [[UIImageView alloc] initWithImage:logo];
+		_logoView = [[UIImageView alloc] initWithFrame:self.contentView.bounds];
+		_logoView.image = logo;
+		// logoView.center = self.contentView.center;
+		_logoView.contentMode = UIViewContentModeCenter;
+		// logoView.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleTopMargin;
+		// logoView.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin;
+		[self.contentView addSubview:_logoView];
 	}
 	return self;
 }
 - (CGFloat)preferredHeightForWidth:(CGFloat)height {
 	return 120.0f;
+}
+- (void)layoutSubviews {
+	[super layoutSubviews];
+	self.logoView.frame = self.contentView.bounds;
 }
 @end
 
