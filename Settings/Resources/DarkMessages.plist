@@ -8,14 +8,6 @@
 	<key>items</key>
 	<array>
 		
-		<!-- [] HEADER -->
-		<dict>
-			<key>cell</key>
-			<string>PSGroupCell</string>
-			<key>headerCellClass</key>
-			<string>DMLogoCell</string>
-		</dict>
-		
 		<!-- Enabled switch -->
 		<dict>
 			<key>cell</key>

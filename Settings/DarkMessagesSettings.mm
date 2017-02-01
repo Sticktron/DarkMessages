@@ -5,15 +5,13 @@
 //
 
 #import <Preferences/PSListController.h>
-#import <Preferences/PSSpecifier.h>
-#import <Preferences/PSTableCell.h>
 #import <Preferences/PSSwitchTableCell.h>
-#import <Social/Social.h>
 
 
 #define DARK_TINT 	[UIColor colorWithWhite:0.09 alpha:1]	// #161616
 #define GRAY_TINT 	[UIColor colorWithWhite:0.20 alpha:1] 	// #333333
 #define BLUE_TINT 	[UIColor colorWithRed:15/255.0 green:132/255.0 blue:252/255.0 alpha:1] // #0F84FC
+
 
 @interface DarkMessagesSettingsController : PSListController
 @end
@@ -29,12 +27,23 @@
 	[super viewDidLoad];
 	
 	// add a heart button to the navbar
-	NSString *path = @"/Library/PreferenceBundles/DarkMessages.bundle/heart.png";
-	UIImage *heartImage = [[UIImage alloc] initWithContentsOfFile:path];
+	UIImage *heartImage = [[UIImage alloc] initWithContentsOfFile:@"/Library/PreferenceBundles/DarkMessages.bundle/heart.png"];
 	UIBarButtonItem *heartButton = [[UIBarButtonItem alloc] initWithImage:heartImage style:UIBarButtonItemStylePlain target:self action:@selector(showLove)];
 	heartButton.imageInsets = (UIEdgeInsets){2, 0, -2, 0};
 	heartButton.tintColor = GRAY_TINT;
 	[self.navigationItem setRightBarButtonItem:heartButton];
+	
+	// add table header...
+	
+	UIImage *logoImage = [UIImage imageWithContentsOfFile:@"/Library/PreferenceBundles/DarkMessages.bundle/header.png"];
+	UIImageView *logoView = [[UIImageView alloc] initWithImage:logoImage];
+	logoView.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin;
+	
+	UIView *headerView = [[UIView alloc] initWithFrame:logoView.frame];
+	headerView.backgroundColor = DARK_TINT;
+	[headerView addSubview:logoView];
+	[self.table setTableHeaderView:headerView];
+	
 }
 - (void)openEmail {
 	NSString *subject = @"DarkMessages Support";
@@ -76,38 +85,7 @@
 @end
 
 
-// Custom Table Cells ----------------------------------------------------------
-
-@interface DMLogoCell : PSTableCell
-@property (nonatomic, strong) UIImageView *logoView;
-@end
-
-@implementation DMLogoCell
-- (id)initWithSpecifier:(PSSpecifier *)specifier {
-	self = [super initWithStyle:UITableViewCellStyleDefault
-				reuseIdentifier:@"LogoCell"
-					  specifier:specifier];
-	if (self) {
-		self.backgroundColor = DARK_TINT;
-		
-		NSString *path = @"/Library/PreferenceBundles/DarkMessages.bundle/header.png";
-		UIImage *logo = [UIImage imageWithContentsOfFile:path];
-		_logoView = [[UIImageView alloc] initWithFrame:self.contentView.bounds];
-		_logoView.image = logo;
-		_logoView.contentMode = UIViewContentModeCenter;
-		[self.contentView addSubview:_logoView];
-	}
-	return self;
-}
-- (CGFloat)preferredHeightForWidth:(CGFloat)height {
-	return 120.0f;
-}
-- (void)layoutSubviews {
-	[super layoutSubviews];
-	self.logoView.frame = self.contentView.bounds;
-}
-@end
-
+// Custom Button Cell ----------------------------------------------------------
 
 @interface DMButtonCell : PSTableCell
 @end
@@ -120,6 +98,8 @@
 }
 @end
 
+
+// Custom Switch Cell ----------------------------------------------------------
 
 @interface DMSwitchCell : PSSwitchTableCell
 @end
