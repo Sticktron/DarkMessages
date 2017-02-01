@@ -8,30 +8,29 @@
 
 #import "Headers.h"
 
+
 static CKUIThemeDark *darkTheme;
-static BOOL isEnabled = YES;
+static BOOL isEnabled;
 
 static void loadSettings() {
-	CFStringRef prefsAppID = CFSTR("com.sticktron.darkmessages");
 	NSDictionary *settings = nil;
 	
-	CFPreferencesAppSynchronize(prefsAppID);
-	CFArrayRef keyList = CFPreferencesCopyKeyList(prefsAppID, kCFPreferencesCurrentUser, kCFPreferencesAnyHost);
+	CFPreferencesAppSynchronize(CFSTR("com.sticktron.darkmessages"));
+	CFArrayRef keyList = CFPreferencesCopyKeyList(CFSTR("com.sticktron.darkmessages"), kCFPreferencesCurrentUser, kCFPreferencesAnyHost);
 	if (keyList) {
-		settings = (NSDictionary *)CFBridgingRelease(CFPreferencesCopyMultiple(keyList, prefsAppID, kCFPreferencesCurrentUser, kCFPreferencesAnyHost));
-		if (settings && settings[@"Enabled"] && [settings[@"Enabled"] boolValue] == NO) {
-			isEnabled = NO;
-		}
+		settings = (NSDictionary *)CFBridgingRelease(CFPreferencesCopyMultiple(keyList, CFSTR("com.sticktron.darkmessages"), kCFPreferencesCurrentUser, kCFPreferencesAnyHost));
 		CFRelease(keyList);
 	}
-	CFRelease(prefsAppID);
+	
+	isEnabled = (settings && settings[@"Enabled"]) ? [settings[@"Enabled"] boolValue] : YES;
 }
 
-static void reloadSettings(CFNotificationCenterRef center, void *observer, CFStringRef name, const void *object, CFDictionaryRef userInfo) {
+static void settingsChanged(CFNotificationCenterRef center, void *observer, CFStringRef name, const void *object, CFDictionaryRef userInfo) {
 	// restart the Messages app
-	HBLogInfo(@"Terminating MobileSMS");
+	HBLogInfo(@"DarkMessages >> Terminating MobileSMS...");
 	[[UIApplication sharedApplication] terminateWithSuccess];
 }
+
 
 // Hooks -----------------------------------------------------------------------
 
@@ -39,7 +38,7 @@ static void reloadSettings(CFNotificationCenterRef center, void *observer, CFStr
 
 %hook CKUIBehaviorPhone
 - (id)theme {
-	return isEnabled ? darkTheme : %orig;
+	return darkTheme;
 }
 %end
 
@@ -51,7 +50,7 @@ static void reloadSettings(CFNotificationCenterRef center, void *observer, CFStr
 
 %hook CKUIBehaviorPad
 - (id)theme {
-	return isEnabled ? darkTheme : %orig;
+	return darkTheme;
 }
 %end
 
@@ -64,48 +63,40 @@ static void reloadSettings(CFNotificationCenterRef center, void *observer, CFStr
 // fix navbar: style
 %hook CKAvatarNavigationBar
 - (void)_setBarStyle:(int)style {
-	isEnabled ? %orig(1) : %orig;
+	%orig(1);
 }
 %end
 
 // fix navbar: contact names
 %hook CKAvatarContactNameCollectionReusableView
 - (void)setStyle:(int)style {
-	isEnabled ? %orig(3) : %orig;
+	%orig(3);
 }
 %end
 
 // fix navbar: group names
 %hook CKAvatarTitleCollectionReusableView
 - (void)setStyle:(int)style {
-	isEnabled ? %orig(3) : %orig;
+	%orig(3);
 }
 %end
 
 // fix navbar: new message label
 %hook CKNavigationBarCanvasView
 - (void)setTitleView:(id)titleView {
-	if (isEnabled) {
-		if (titleView && [titleView respondsToSelector:@selector(setTextColor:)]) {
-			[(UILabel *)titleView setTextColor:UIColor.whiteColor];
-		}
-		%orig(titleView);
-	} else {
-		%orig;
+	if (titleView && [titleView respondsToSelector:@selector(setTextColor:)]) {
+		[(UILabel *)titleView setTextColor:UIColor.whiteColor];
 	}
+	%orig(titleView);
 }
 %end
 
 // fix group details: contact names
 %hook CKDetailsContactsTableViewCell
 - (UILabel *)nameLabel {
-	if (isEnabled) {
-		UILabel *nl = %orig;
-		nl.textColor = UIColor.whiteColor;
-		return nl;
-	} else {
-		return %orig;
-	}
+	UILabel *nl = %orig;
+	nl.textColor = UIColor.whiteColor;
+	return nl;
 }
 %end
 
@@ -115,22 +106,26 @@ static void reloadSettings(CFNotificationCenterRef center, void *observer, CFStr
 
 %ctor {
 	@autoreleasepool {
+		HBLogDebug("@Tweak loading...");
+		
 		loadSettings();
 		
-		darkTheme = [[%c(CKUIThemeDark) alloc] init];
-		
-		// init hooks
-		if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-			%init(Pad);
-		} else {
-			%init(Phone);
+		if (isEnabled) {
+			darkTheme = [[%c(CKUIThemeDark) alloc] init];
+			
+			// init hooks
+			if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+				%init(Pad);
+			} else {
+				%init(Phone);
+			}
+			%init(Common);
 		}
-		%init(Common);
 		
 		// listen for notifications from settings
 		CFNotificationCenterAddObserver(CFNotificationCenterGetDarwinNotifyCenter(),
 			NULL,
-			(CFNotificationCallback)reloadSettings,
+			(CFNotificationCallback)settingsChanged,
 			CFSTR("com.sticktron.darkmessages.settingschanged"),
 			NULL,
 			CFNotificationSuspensionBehaviorDeliverImmediately);
