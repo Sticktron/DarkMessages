@@ -15,7 +15,6 @@
 #define GRAY_TINT 	[UIColor colorWithWhite:0.20 alpha:1] 	// #333333
 #define BLUE_TINT 	[UIColor colorWithRed:15/255.0 green:132/255.0 blue:252/255.0 alpha:1] // #0F84FC
 
-
 @interface DarkMessagesSettingsController : PSListController
 @end
 
@@ -58,7 +57,7 @@
 	} else {
 		url = [NSURL URLWithString:@"http://twitter.com/sticktron"];
 	}
-	
+		
 	[[UIApplication sharedApplication] openURL:url];
 }
 - (void)openGitHub {
@@ -93,14 +92,9 @@
 		
 		NSString *path = @"/Library/PreferenceBundles/DarkMessages.bundle/header.png";
 		UIImage *logo = [UIImage imageWithContentsOfFile:path];
-		
-		// UIImageView *logoView = [[UIImageView alloc] initWithImage:logo];
 		_logoView = [[UIImageView alloc] initWithFrame:self.contentView.bounds];
 		_logoView.image = logo;
-		// logoView.center = self.contentView.center;
 		_logoView.contentMode = UIViewContentModeCenter;
-		// logoView.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleTopMargin;
-		// logoView.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin;
 		[self.contentView addSubview:_logoView];
 	}
 	return self;
