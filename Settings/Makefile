@@ -7,7 +7,6 @@ BUNDLE_NAME = DarkMessages
 DarkMessages_CFLAGS = -fobjc-arc
 DarkMessages_FILES = DarkMessagesSettings.mm
 DarkMessages_INSTALL_PATH = /Library/PreferenceBundles
-DarkMessages_FRAMEWORKS = UIKit CoreGraphics Social
 DarkMessages_PRIVATE_FRAMEWORKS = Preferences
 
 include $(THEOS_MAKE_PATH)/bundle.mk
