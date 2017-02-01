@@ -9,25 +9,31 @@
 #import "Headers.h"
 
 
+static BOOL isEnabled = YES;
 static CKUIThemeDark *darkTheme;
-static BOOL isEnabled;
+
 
 static void loadSettings() {
 	NSDictionary *settings = nil;
-	
-	CFPreferencesAppSynchronize(CFSTR("com.sticktron.darkmessages"));
-	CFArrayRef keyList = CFPreferencesCopyKeyList(CFSTR("com.sticktron.darkmessages"), kCFPreferencesCurrentUser, kCFPreferencesAnyHost);
+	CFStringRef kPrefsAppID = CFSTR("com.sticktron.darkmessages");
+	CFPreferencesAppSynchronize(kPrefsAppID);
+	CFArrayRef keyList = CFPreferencesCopyKeyList(kPrefsAppID, kCFPreferencesCurrentUser, kCFPreferencesAnyHost);
 	if (keyList) {
-		settings = (NSDictionary *)CFBridgingRelease(CFPreferencesCopyMultiple(keyList, CFSTR("com.sticktron.darkmessages"), kCFPreferencesCurrentUser, kCFPreferencesAnyHost));
+		settings = (NSDictionary *)CFBridgingRelease(CFPreferencesCopyMultiple(keyList, kPrefsAppID, kCFPreferencesCurrentUser, kCFPreferencesAnyHost));
 		CFRelease(keyList);
 	}
-	
-	isEnabled = (settings && settings[@"Enabled"]) ? [settings[@"Enabled"] boolValue] : YES;
+	if (settings && settings[@"Enabled"]) {
+		isEnabled = [settings[@"Enabled"] boolValue];
+	}
 }
 
-static void settingsChanged(CFNotificationCenterRef center, void *observer, CFStringRef name, const void *object, CFDictionaryRef userInfo) {
+static void settingsChanged(CFNotificationCenterRef center,
+							void *observer,
+							CFStringRef name,
+							const void *object,
+							CFDictionaryRef userInfo) {
 	// restart the Messages app
-	HBLogInfo(@"DarkMessages >> Terminating MobileSMS...");
+	NSLog(@"DarkMessages >> Terminating MobileSMS...");
 	[[UIApplication sharedApplication] terminateWithSuccess];
 }
 
@@ -106,9 +112,10 @@ static void settingsChanged(CFNotificationCenterRef center, void *observer, CFSt
 
 %ctor {
 	@autoreleasepool {
-		HBLogDebug("@Tweak loading...");
+		NSLog(@"DarkMessages >> Tweak loading...");
 		
 		loadSettings();
+		NSLog(@"DarkMessages >> is enabled? %@", isEnabled?@"yes":@"no");
 		
 		if (isEnabled) {
 			darkTheme = [[%c(CKUIThemeDark) alloc] init];
