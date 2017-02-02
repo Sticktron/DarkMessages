@@ -1,7 +1,7 @@
 Package: com.sticktron.darkmessages
 Name: DarkMessages (iOS 10)
 Depends: firmware (>= 10.0), mobilesubstrate, preferenceloader
-Version: 1.0.5
+Version: 1.1.1
 Architecture: iphoneos-arm
 Description: Dark mode for Messages (iOS 10)
 Maintainer: Sticktron <sticktron@hotmail.com>

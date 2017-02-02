@@ -112,10 +112,10 @@ static void settingsChanged(CFNotificationCenterRef center,
 
 %ctor {
 	@autoreleasepool {
-		NSLog(@"DarkMessages >> Tweak loading...");
+		//NSLog(@"DarkMessages >> Tweak loading...");
 		
 		loadSettings();
-		NSLog(@"DarkMessages >> is enabled? %@", isEnabled?@"yes":@"no");
+		//NSLog(@"DarkMessages >> is enabled? %@", isEnabled?@"yes":@"no");
 		
 		if (isEnabled) {
 			darkTheme = [[%c(CKUIThemeDark) alloc] init];
