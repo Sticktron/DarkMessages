@@ -5,12 +5,14 @@
 //
 
 #import <Preferences/PSListController.h>
+#import <Preferences/PSSpecifier.h>
 #import <Preferences/PSSwitchTableCell.h>
+#import <spawn.h>
 
 
-#define DARK_TINT 	[UIColor colorWithWhite:0.09 alpha:1]	// #161616
-#define GRAY_TINT 	[UIColor colorWithWhite:0.20 alpha:1] 	// #333333
-#define BLUE_TINT 	[UIColor colorWithRed:15/255.0 green:132/255.0 blue:252/255.0 alpha:1] // #0F84FC
+#define TINT_COLOR 			[UIColor colorWithWhite:0.20 alpha:1] //#333333
+#define DARK_TINT_COLOR 	[UIColor colorWithWhite:0.09 alpha:1] //#161616
+#define BLUE_COLOR 			[UIColor colorWithRed:15/255.0 green:132/255.0 blue:252/255.0 alpha:1] //#0F84FC
 
 
 @interface DarkMessagesSettingsController : PSListController
@@ -20,31 +22,79 @@
 - (id)specifiers {
 	if (_specifiers == nil) {
 		_specifiers = [self loadSpecifiersFromPlistName:@"DarkMessages" target:self];
+		
+		BOOL hasNoctis = [[NSFileManager defaultManager] fileExistsAtPath:@"/Library/MobileSubstrate/DynamicLibraries/Noctis.dylib"];
+		if (!hasNoctis) {
+			PSSpecifier *specifier = [self specifierForID:@"NoctisSync"];
+			[specifier setProperty:@NO forKey:@"enabled"];
+			[specifier setProperty:@NO forKey:@"default"];
+		}
 	}
 	return _specifiers;
 }
 - (void)viewDidLoad {
 	[super viewDidLoad];
 	
+	self.title = nil;
+	self.edgeToEdgeCells = YES;
+	
 	// add a heart button to the navbar
 	UIImage *heartImage = [[UIImage alloc] initWithContentsOfFile:@"/Library/PreferenceBundles/DarkMessages.bundle/heart.png"];
 	UIBarButtonItem *heartButton = [[UIBarButtonItem alloc] initWithImage:heartImage style:UIBarButtonItemStylePlain target:self action:@selector(showLove)];
 	heartButton.imageInsets = (UIEdgeInsets){2, 0, -2, 0};
-	heartButton.tintColor = GRAY_TINT;
+	heartButton.tintColor = TINT_COLOR;
 	[self.navigationItem setRightBarButtonItem:heartButton];
 	
-	// add table header...
-	
+	// add table header
 	UIImage *logoImage = [UIImage imageWithContentsOfFile:@"/Library/PreferenceBundles/DarkMessages.bundle/header.png"];
 	UIImageView *logoView = [[UIImageView alloc] initWithImage:logoImage];
 	logoView.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin;
-	
 	UIView *headerView = [[UIView alloc] initWithFrame:logoView.frame];
-	headerView.backgroundColor = DARK_TINT;
+	headerView.backgroundColor = DARK_TINT_COLOR;
 	[headerView addSubview:logoView];
 	[self.table setTableHeaderView:headerView];
 	
 }
+- (void)viewWillAppear:(BOOL)animated {
+	[super viewWillAppear:animated];
+	
+	[self reload];
+	
+	// tint navbar
+	self.navigationController.navigationController.navigationBar.tintColor = TINT_COLOR;
+}
+- (void)viewWillDisappear:(BOOL)animated {
+	// un-tint navbar
+	self.navigationController.navigationController.navigationBar.tintColor = nil;
+
+	[super viewWillDisappear:animated];
+}
+
+- (void)setNoctisSync:(id)value specifier:(PSSpecifier*)specifier {
+	[self setPreferenceValue:value specifier:specifier];
+	[self askForRespring];
+}
+- (void)askForRespring {
+	UIAlertView *alert = [[UIAlertView alloc]
+		initWithTitle:@"Restart SpringBoard"
+		message:@"Respring to apply this setting."
+		delegate:self
+		cancelButtonTitle:@"Later"
+		otherButtonTitles:@"Respring", nil
+	];
+	[alert show];
+}
+- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(int)buttonIndex {
+	if (buttonIndex == 1) { // YES
+		[self respringNow];
+	}
+}
+- (void)respringNow {
+	pid_t pid;
+	const char* args[] = { "killall", "-9", "backboardd", NULL };
+	posix_spawn(&pid, "/usr/bin/killall", NULL, NULL, (char* const*)args, NULL);
+}
+
 - (void)openEmail {
 	NSString *subject = @"DarkMessages Support";
 	NSString *body = @"";
@@ -94,7 +144,7 @@
 - (void)layoutSubviews {
 	[super layoutSubviews];
 	
-	[self.textLabel setTextColor:GRAY_TINT];
+	[self.textLabel setTextColor:TINT_COLOR];
 }
 @end
 
@@ -108,7 +158,7 @@
 - (id)initWithStyle:(int)arg1 reuseIdentifier:(id)arg2 specifier:(id)arg3 {
 	self = [super initWithStyle:arg1 reuseIdentifier:arg2 specifier:arg3];
 	if (self) {
-		[((UISwitch *)[self control]) setOnTintColor:BLUE_TINT];
+		[((UISwitch *)[self control]) setOnTintColor:BLUE_COLOR];
 	}
 	return self;
 }

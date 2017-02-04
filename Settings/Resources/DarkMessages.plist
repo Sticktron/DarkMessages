@@ -27,12 +27,41 @@
 		</dict>
 		
 		
+		<!-- [] NOCTIS -->
+		<dict>
+			<key>cell</key>
+			<string>PSGroupCell</string>
+			<key>footerText</key>
+			<string>Noctis will control when DarkMessages is enabled.</string>
+		</dict>
+		<dict>
+			<key>cell</key>
+			<string>PSSwitchCell</string>
+			<key>cellClass</key>
+			<string>DMSwitchCell</string>
+			<key>id</key>
+			<string>NoctisSync</string>
+			<key>label</key>
+			<string>Noctis Sync</string>
+			<key>key</key>
+			<string>NoctisSync</string>
+			<key>defaults</key>
+			<string>com.sticktron.darkmessages</string>
+			<key>default</key>
+			<true/>
+			<key>set</key>
+			<string>setNoctisSync:specifier:</string>
+			<key>PostNotification</key>
+			<string>com.sticktron.darkmessages.settingschanged</string>
+		</dict>
+		
+		
 		<!-- [] SUPPORT -->
 		<dict>
 			<key>cell</key>
 			<string>PSGroupCell</string>
-			<key>label</key>
-			<string>Support</string>
+			<!-- <key>label</key>
+			<string>Support</string> -->
 		</dict>
 		
 		<!-- File an Issue -->
@@ -82,8 +111,8 @@
 		<dict>
 			<key>cell</key>
 			<string>PSGroupCell</string>
-			<key>label</key>
-			<string>Links</string>
+			<!-- <key>label</key>
+			<string>Links</string> -->
 		</dict>
 		
 		<!-- Source Code -->
