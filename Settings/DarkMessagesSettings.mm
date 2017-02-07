@@ -7,8 +7,6 @@
 #import <Preferences/PSListController.h>
 #import <Preferences/PSSpecifier.h>
 #import <Preferences/PSSwitchTableCell.h>
-#import <spawn.h>
-
 
 #define TINT_COLOR 			[UIColor colorWithWhite:0.20 alpha:1] //#333333
 #define DARK_TINT_COLOR 	[UIColor colorWithWhite:0.09 alpha:1] //#161616
@@ -58,27 +56,6 @@
 
 	[super viewWillDisappear:animated];
 }
-// - (void)askForRespring {
-// 	UIAlertView *alert = [[UIAlertView alloc]
-// 		initWithTitle:@"Restart SpringBoard"
-// 		message:@"Respring to apply this setting."
-// 		delegate:self
-// 		cancelButtonTitle:@"Later"
-// 		otherButtonTitles:@"Respring", nil
-// 	];
-// 	[alert show];
-// }
-// - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(int)buttonIndex {
-// 	if (buttonIndex == 1) { // YES
-// 		[self respringNow];
-// 	}
-// }
-// - (void)respringNow {
-// 	pid_t pid;
-// 	const char* args[] = { "killall", "-9", "backboardd", NULL };
-// 	posix_spawn(&pid, "/usr/bin/killall", NULL, NULL, (char* const*)args, NULL);
-// }
-
 - (CGFloat)tableView:(id)tableView heightForHeaderInSection:(NSInteger)section {
 	if (section == 0) {
 		return HEADER_HEIGHT;
