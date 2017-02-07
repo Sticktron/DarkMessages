@@ -1,16 +1,17 @@
 //
 //  Settings for DarkMessages
 //
-//  @sticktron
+//  ©2017 Sticktron
 //
 
 #import <Preferences/PSListController.h>
+#import <Preferences/PSSpecifier.h>
 #import <Preferences/PSSwitchTableCell.h>
 
-
-#define DARK_TINT 	[UIColor colorWithWhite:0.09 alpha:1]	// #161616
-#define GRAY_TINT 	[UIColor colorWithWhite:0.20 alpha:1] 	// #333333
-#define BLUE_TINT 	[UIColor colorWithRed:15/255.0 green:132/255.0 blue:252/255.0 alpha:1] // #0F84FC
+#define TINT_COLOR 			[UIColor colorWithWhite:0.20 alpha:1] //#333333
+#define DARK_TINT_COLOR 	[UIColor colorWithWhite:0.09 alpha:1] //#161616
+#define BLUE_COLOR 			[UIColor colorWithRed:15/255.0 green:132/255.0 blue:252/255.0 alpha:1] //#0F84FC
+#define HEADER_HEIGHT 		120.0f
 
 
 @interface DarkMessagesSettingsController : PSListController
@@ -20,30 +21,62 @@
 - (id)specifiers {
 	if (_specifiers == nil) {
 		_specifiers = [self loadSpecifiersFromPlistName:@"DarkMessages" target:self];
+		
+		// disable Noctis Control switch if Noctis is not installed
+		BOOL hasNoctis = [[NSFileManager defaultManager] fileExistsAtPath:@"/Library/MobileSubstrate/DynamicLibraries/Noctis.dylib"];
+		if (!hasNoctis) {
+			PSSpecifier *specifier = [self specifierForID:@"NoctisControl"];
+			[specifier setProperty:@NO forKey:@"enabled"];
+			[specifier setProperty:@NO forKey:@"default"];
+		}
 	}
 	return _specifiers;
 }
 - (void)viewDidLoad {
 	[super viewDidLoad];
 	
+	self.title = nil;
+	
 	// add a heart button to the navbar
 	UIImage *heartImage = [[UIImage alloc] initWithContentsOfFile:@"/Library/PreferenceBundles/DarkMessages.bundle/heart.png"];
 	UIBarButtonItem *heartButton = [[UIBarButtonItem alloc] initWithImage:heartImage style:UIBarButtonItemStylePlain target:self action:@selector(showLove)];
 	heartButton.imageInsets = (UIEdgeInsets){2, 0, -2, 0};
-	heartButton.tintColor = GRAY_TINT;
+	heartButton.tintColor = TINT_COLOR;
 	[self.navigationItem setRightBarButtonItem:heartButton];
+}
+- (void)viewWillAppear:(BOOL)animated {
+	[super viewWillAppear:animated];
 	
-	// add table header...
-	
-	UIImage *logoImage = [UIImage imageWithContentsOfFile:@"/Library/PreferenceBundles/DarkMessages.bundle/header.png"];
-	UIImageView *logoView = [[UIImageView alloc] initWithImage:logoImage];
-	logoView.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin;
-	
-	UIView *headerView = [[UIView alloc] initWithFrame:logoView.frame];
-	headerView.backgroundColor = DARK_TINT;
-	[headerView addSubview:logoView];
-	[self.table setTableHeaderView:headerView];
-	
+	// tint navbar
+	self.navigationController.navigationController.navigationBar.tintColor = TINT_COLOR;
+}
+- (void)viewWillDisappear:(BOOL)animated {
+	// un-tint navbar
+	self.navigationController.navigationController.navigationBar.tintColor = nil;
+
+	[super viewWillDisappear:animated];
+}
+- (CGFloat)tableView:(id)tableView heightForHeaderInSection:(NSInteger)section {
+	if (section == 0) {
+		return HEADER_HEIGHT;
+	} else {
+		return [super tableView:tableView heightForHeaderInSection:section];
+	}
+}
+- (id)tableView:(id)tableView viewForHeaderInSection:(NSInteger)section {
+	if (section == 0) {
+		// add table header
+		UIImage *logoImage = [UIImage imageWithContentsOfFile:@"/Library/PreferenceBundles/DarkMessages.bundle/header.png"];
+		UIImageView *logoView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, 320, HEADER_HEIGHT)];
+		logoView.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin;
+		logoView.image = logoImage;
+		UIView *headerView = [[UIView alloc] initWithFrame:logoView.frame];
+		headerView.backgroundColor = DARK_TINT_COLOR;
+		[headerView addSubview:logoView];
+		return headerView;
+	} else {
+		return [super tableView:tableView viewForHeaderInSection:section];
+	}
 }
 - (void)openEmail {
 	NSString *subject = @"DarkMessages Support";
@@ -94,7 +127,7 @@
 - (void)layoutSubviews {
 	[super layoutSubviews];
 	
-	[self.textLabel setTextColor:GRAY_TINT];
+	[self.textLabel setTextColor:TINT_COLOR];
 }
 @end
 
@@ -108,7 +141,7 @@
 - (id)initWithStyle:(int)arg1 reuseIdentifier:(id)arg2 specifier:(id)arg3 {
 	self = [super initWithStyle:arg1 reuseIdentifier:arg2 specifier:arg3];
 	if (self) {
-		[((UISwitch *)[self control]) setOnTintColor:BLUE_TINT];
+		[((UISwitch *)[self control]) setOnTintColor:BLUE_COLOR];
 	}
 	return self;
 }

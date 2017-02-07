@@ -8,6 +8,11 @@
 	<key>items</key>
 	<array>
 		
+		<!-- [] HEADER -->
+		<dict>
+			<key>cell</key>
+			<string>PSGroupCell</string>
+		</dict>
 		<!-- Enabled switch -->
 		<dict>
 			<key>cell</key>
@@ -26,15 +31,55 @@
 			<string>com.sticktron.darkmessages.settingschanged</string>
 		</dict>
 		
+		<!-- [] TRIGGERS -->
+		<dict>
+			<key>cell</key>
+			<string>PSGroupCell</string>
+			<key>label</key>
+			<string>Triggers</string>
+		</dict>
+		<!-- Night Shift -->
+		<dict>
+			<key>cell</key>
+			<string>PSSwitchCell</string>
+			<key>cellClass</key>
+			<string>DMSwitchCell</string>
+			<key>label</key>
+			<string>Control with NightShift</string>
+			<key>key</key>
+			<string>NightShiftControl</string>
+			<key>defaults</key>
+			<string>com.sticktron.darkmessages</string>
+			<key>default</key>
+			<false/>
+			<key>PostNotification</key>
+			<string>com.sticktron.darkmessages.settingschanged</string>
+		</dict>
+		<!-- Noctis -->
+		<dict>
+			<key>cell</key>
+			<string>PSSwitchCell</string>
+			<key>cellClass</key>
+			<string>DMSwitchCell</string>
+			<key>label</key>
+			<string>Control with Noctis</string>
+			<key>key</key>
+			<string>NoctisControl</string>
+			<key>defaults</key>
+			<string>com.sticktron.darkmessages</string>
+			<key>default</key>
+			<true/>
+			<key>PostNotification</key>
+			<string>com.sticktron.darkmessages.settingschanged</string>
+		</dict>
 		
 		<!-- [] SUPPORT -->
 		<dict>
 			<key>cell</key>
 			<string>PSGroupCell</string>
-			<key>label</key>
-			<string>Support</string>
+			<!-- <key>label</key>
+			<string>Support</string> -->
 		</dict>
-		
 		<!-- File an Issue -->
 		<dict>
 			<key>cell</key>
@@ -48,7 +93,6 @@
 			<key>action</key>
 			<string>openGitHubIssue</string>
 		</dict>
-		
 		<!-- Email -->
 		<dict>
 			<key>cell</key>
@@ -62,7 +106,6 @@
 			<key>action</key>
 			<string>openEmail</string>
 		</dict>
-		
 		<!-- Tweet -->
 		<dict>
 			<key>cell</key>
@@ -76,16 +119,14 @@
 			<key>action</key>
 			<string>openTwitter</string>
 		</dict>
-				
 		
 		<!-- [] LINKS -->
 		<dict>
 			<key>cell</key>
 			<string>PSGroupCell</string>
-			<key>label</key>
-			<string>Links</string>
+			<!-- <key>label</key>
+			<string>Links</string> -->
 		</dict>
-		
 		<!-- Source Code -->
 		<dict>
 			<key>cell</key>
@@ -99,7 +140,6 @@
 			<key>action</key>
 			<string>openGitHub</string>
 		</dict>
-		
 		<!-- r/jailbreak -->
 		<dict>
 			<key>cell</key>
@@ -113,8 +153,7 @@
 			<key>action</key>
 			<string>openReddit</string>
 		</dict>
-		
-		
+				
 		<!-- [] FOOTER -->
 		<dict>
 			<key>cell</key>
@@ -122,12 +161,10 @@
 			<key>footerAlignment</key>
 			<string>1</string>
 			<key>footerText</key>
-			<string>©2017. For iOS 10.
+			<string>©2017
 				
 😈</string>
 		</dict>
-		
-		
 	</array>
 </dict>
 </plist>

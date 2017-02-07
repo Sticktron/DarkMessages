@@ -1,65 +1,68 @@
 //
+//  Tweak.xm
+//
 //  DarkMessages
-//  Dark theme for Messages app.
-//  iOS 10
+//  Dark theme for the iOS 10 Messages app.
 //
-//  @sticktron
+//  ©2017 Sticktron
 //
+
+#define DEBUG_PREFIX @"[DarkMessages]"
+#import "DebugLog.h"
 
 #import "Headers.h"
 
 
-static BOOL isEnabled = YES;
+CFStringRef kPrefsAppID = CFSTR("com.sticktron.darkmessages");
+CFStringRef kPrefsEnabledKey = CFSTR("Enabled");
+
+static BOOL isEnabled;
 static CKUIThemeDark *darkTheme;
 
 
-static void loadSettings() {
-	NSDictionary *settings = nil;
-	CFStringRef kPrefsAppID = CFSTR("com.sticktron.darkmessages");
-	CFPreferencesAppSynchronize(kPrefsAppID);
-	CFArrayRef keyList = CFPreferencesCopyKeyList(kPrefsAppID, kCFPreferencesCurrentUser, kCFPreferencesAnyHost);
-	if (keyList) {
-		settings = (NSDictionary *)CFBridgingRelease(CFPreferencesCopyMultiple(keyList, kPrefsAppID, kCFPreferencesCurrentUser, kCFPreferencesAnyHost));
-		CFRelease(keyList);
-	}
-	if (settings && settings[@"Enabled"]) {
-		isEnabled = [settings[@"Enabled"] boolValue];
-	}
-}
-
-static void settingsChanged(CFNotificationCenterRef center,
-							void *observer,
-							CFStringRef name,
-							const void *object,
-							CFDictionaryRef userInfo) {
-	// restart the Messages app
+static void killMessages() {
 	NSLog(@"DarkMessages >> Terminating MobileSMS...");
 	[[UIApplication sharedApplication] terminateWithSuccess];
 }
 
+static void loadSettings() {
+	CFPreferencesAppSynchronize(kPrefsAppID);
+	Boolean valid;
+	Boolean value = CFPreferencesGetAppBooleanValue(kPrefsEnabledKey, kPrefsAppID, &valid);
+	isEnabled = valid ? (BOOL)value : YES; // enabled by default
+	DebugLog(@"Loaded settings >> is enabled? %@", isEnabled?@"yes":@"no");
+}
 
-// Hooks -----------------------------------------------------------------------
+static void handleSettingsChanged(CFNotificationCenterRef center, void *observer, CFStringRef name, const void *object, CFDictionaryRef userInfo) {
+	DebugLog(@"Notice: Preferences have changed!");
+	BOOL oldSetting = isEnabled;
+	loadSettings();
+	if (isEnabled != oldSetting) {
+		killMessages();
+	}
+}
+
+
+// MobileSMS Hooks -------------------------------------------------------------
 
 %group Phone
-
 %hook CKUIBehaviorPhone
 - (id)theme {
+	// return isEnabled ? darkTheme : %orig;
 	return darkTheme;
 }
 %end
-
 %end
 
 //------------------------------------------------------------------------------
 
 %group Pad
-
 %hook CKUIBehaviorPad
 - (id)theme {
+	// return isEnabled ? darkTheme : %orig;
 	return darkTheme;
 }
 %end
-
 %end
 
 //------------------------------------------------------------------------------
@@ -69,6 +72,7 @@ static void settingsChanged(CFNotificationCenterRef center,
 // fix navbar: style
 %hook CKAvatarNavigationBar
 - (void)_setBarStyle:(int)style {
+	// isEnabled ? %orig(1) : %orig;
 	%orig(1);
 }
 %end
@@ -76,6 +80,7 @@ static void settingsChanged(CFNotificationCenterRef center,
 // fix navbar: contact names
 %hook CKAvatarContactNameCollectionReusableView
 - (void)setStyle:(int)style {
+	// isEnabled ? %orig(3) : %orig;
 	%orig(3);
 }
 %end
@@ -83,28 +88,85 @@ static void settingsChanged(CFNotificationCenterRef center,
 // fix navbar: group names
 %hook CKAvatarTitleCollectionReusableView
 - (void)setStyle:(int)style {
+	// isEnabled ? %orig(3) : %orig;
 	%orig(3);
 }
 %end
 
 // fix navbar: new message label
 %hook CKNavigationBarCanvasView
-- (void)setTitleView:(id)titleView {
-	if (titleView && [titleView respondsToSelector:@selector(setTextColor:)]) {
-		[(UILabel *)titleView setTextColor:UIColor.whiteColor];
-	}
-	%orig(titleView);
+- (id)titleView {
+	// if (isEnabled) {
+		id tv = %orig;
+		if (tv && [tv respondsToSelector:@selector(setTextColor:)]) {
+			[(UILabel *)tv setTextColor:UIColor.whiteColor];
+		}
+		return tv;
+	// } else {
+	// 	return %orig;
+	// }
 }
 %end
 
 // fix group details: contact names
 %hook CKDetailsContactsTableViewCell
 - (UILabel *)nameLabel {
-	UILabel *nl = %orig;
-	nl.textColor = UIColor.whiteColor;
-	return nl;
+	// if (isEnabled) {
+		UILabel *nl = %orig;
+		nl.textColor = UIColor.whiteColor;
+		return nl;
+	// } else {
+	// 	return %orig;
+	// }
 }
 %end
+
+// fix message entry inactive color
+%hook CKMessageEntryView
+- (UILabel *)collpasedPlaceholderLabel {
+	UILabel *label = %orig;
+	label.textColor = [UIColor colorWithRed:0.522 green:0.557 blue:0.6 alpha:1];
+	return label;
+}
+%end
+
+
+// tests ///////
+
+// %hook CKUIThemeDark
+// - (id)blue_balloonColors {
+// 	return @[ [UIColor colorWithRed:1 green:0 blue:0.5 alpha:1], [UIColor colorWithRed:0.5 green:0 blue:1 alpha:1] ];
+// }
+// - (id)gray_balloonColors {
+// 	return @[ [UIColor colorWithRed:0 green:0.5 blue:1 alpha:1], [UIColor colorWithRed:0 green:1 blue:0.5 alpha:1] ];
+// }
+// %end
+
+// %hook CKAudioProgressView
+// - (void)setStyle:(int)arg1 {
+// 	%log;
+// 	%orig;
+// }
+// %end
+// %hook CKAvatarPickerViewController
+// - (void)setStyle:(int)arg1 {
+// 	%log;
+// 	%orig;
+// }
+// %end
+// %hook CKFullScreenAppNavbarManager
+// - (void)setStyle:(int)arg1 {
+// 	%log;
+// 	%orig;
+// }
+// %end
+// %hook CKMessageEntryView
+// - (void)setStyle:(int)arg1 {
+// 	// default is 4; 2 is darker, 1 is lighter
+// 	%log;
+// 	%orig;
+// }
+// %end
 
 %end
 
@@ -112,15 +174,11 @@ static void settingsChanged(CFNotificationCenterRef center,
 
 %ctor {
 	@autoreleasepool {
-		//NSLog(@"DarkMessages >> Tweak loading...");
+		DebugLog(@"Loading Tweak...");
 		
 		loadSettings();
-		//NSLog(@"DarkMessages >> is enabled? %@", isEnabled?@"yes":@"no");
-		
 		if (isEnabled) {
 			darkTheme = [[%c(CKUIThemeDark) alloc] init];
-			
-			// init hooks
 			if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
 				%init(Pad);
 			} else {
@@ -129,12 +187,13 @@ static void settingsChanged(CFNotificationCenterRef center,
 			%init(Common);
 		}
 		
-		// listen for notifications from settings
+		// listen for settings changes
 		CFNotificationCenterAddObserver(CFNotificationCenterGetDarwinNotifyCenter(),
 			NULL,
-			(CFNotificationCallback)settingsChanged,
+			(CFNotificationCallback)handleSettingsChanged,
 			CFSTR("com.sticktron.darkmessages.settingschanged"),
 			NULL,
-			CFNotificationSuspensionBehaviorDeliverImmediately);
+			CFNotificationSuspensionBehaviorDeliverImmediately
+		);
 	}
 }
