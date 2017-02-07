@@ -1,30 +1,20 @@
 //
-//  DarkMessages
-//  Dark theme for Messages app.
-//  iOS 10
+//  Tweak.xm
 //
-//  @sticktron
+//  DarkMessages
+//  Dark theme for the iOS 10 Messages app.
+//
+//  ©2017 Sticktron
 //
 
 #define DEBUG_PREFIX @"[DarkMessages]"
 #import "DebugLog.h"
 
 #import "Headers.h"
-// #import <spawn.h>
 
 
 CFStringRef kPrefsAppID = CFSTR("com.sticktron.darkmessages");
-CFStringRef kEnabledKey = CFSTR("Enabled");
-CFStringRef kNoctisSyncKey = CFSTR("NoctisSync");
-
-CFStringRef kSettingsChangedID = CFSTR("com.sticktron.darkmessages.settingschanged");
-CFStringRef kNoctisEnabledID = CFSTR("com.sticktron.darkmessages.noctisenabled");
-CFStringRef kNoctisDisabledID = CFSTR("com.sticktron.darkmessages.noctisdisabled");
-
-// CFStringRef kNoctisAppID = CFSTR("com.laughingquoll.noctisprefs.plist ");
-// CFStringRef kNoctisEnabledKey = CFSTR("enabled");
-CFStringRef kNoctisAppID = CFSTR("com.laughingquoll.noctis");
-CFStringRef kNoctisEnabledKey = CFSTR("LQDDarkModeEnabled");
+CFStringRef kPrefsEnabledKey = CFSTR("Enabled");
 
 static BOOL isEnabled;
 static CKUIThemeDark *darkTheme;
@@ -32,19 +22,14 @@ static CKUIThemeDark *darkTheme;
 
 static void killMessages() {
 	NSLog(@"DarkMessages >> Terminating MobileSMS...");
-	
 	[[UIApplication sharedApplication] terminateWithSuccess];
-	
-	// pid_t pid;
-	// const char* args[] = { "killall", "MobileSMS", NULL };
-	// posix_spawn(&pid, "/usr/bin/killall", NULL, NULL, (char* const*)args, NULL);
 }
 
 static void loadSettings() {
 	CFPreferencesAppSynchronize(kPrefsAppID);
 	Boolean valid;
-	Boolean value = CFPreferencesGetAppBooleanValue(kEnabledKey, kPrefsAppID, &valid);
-	isEnabled = valid ? (BOOL)value : YES;
+	Boolean value = CFPreferencesGetAppBooleanValue(kPrefsEnabledKey, kPrefsAppID, &valid);
+	isEnabled = valid ? (BOOL)value : YES; // enabled by default
 	DebugLog(@"Loaded settings >> is enabled? %@", isEnabled?@"yes":@"no");
 }
 
@@ -55,16 +40,6 @@ static void handleSettingsChanged(CFNotificationCenterRef center, void *observer
 	if (isEnabled != oldSetting) {
 		killMessages();
 	}
-}
-
-// SpringBoard-only function
-static void handleNoctis(BOOL didEnable) {
-	DebugLog(@"Noctis was toggled: %@", didEnable?@"ON":@"OFF");
-	CFPreferencesSetAppValue(kEnabledKey, didEnable ? kCFBooleanTrue : kCFBooleanFalse, kPrefsAppID);
-	CFPreferencesAppSynchronize(kPrefsAppID);
-	
-	// tell MobileSMS
-	CFNotificationCenterPostNotification(CFNotificationCenterGetDarwinNotifyCenter(), kSettingsChangedID, NULL, NULL, true);
 }
 
 
@@ -146,80 +121,79 @@ static void handleNoctis(BOOL didEnable) {
 }
 %end
 
+// fix message entry inactive color
+%hook CKMessageEntryView
+- (UILabel *)collpasedPlaceholderLabel {
+	UILabel *label = %orig;
+	label.textColor = [UIColor colorWithRed:0.522 green:0.557 blue:0.6 alpha:1];
+	return label;
+}
+%end
+
+
+// tests ///////
+
+// %hook CKUIThemeDark
+// - (id)blue_balloonColors {
+// 	return @[ [UIColor colorWithRed:1 green:0 blue:0.5 alpha:1], [UIColor colorWithRed:0.5 green:0 blue:1 alpha:1] ];
+// }
+// - (id)gray_balloonColors {
+// 	return @[ [UIColor colorWithRed:0 green:0.5 blue:1 alpha:1], [UIColor colorWithRed:0 green:1 blue:0.5 alpha:1] ];
+// }
+// %end
+
+// %hook CKAudioProgressView
+// - (void)setStyle:(int)arg1 {
+// 	%log;
+// 	%orig;
+// }
+// %end
+// %hook CKAvatarPickerViewController
+// - (void)setStyle:(int)arg1 {
+// 	%log;
+// 	%orig;
+// }
+// %end
+// %hook CKFullScreenAppNavbarManager
+// - (void)setStyle:(int)arg1 {
+// 	%log;
+// 	%orig;
+// }
+// %end
+// %hook CKMessageEntryView
+// - (void)setStyle:(int)arg1 {
+// 	// default is 4; 2 is darker, 1 is lighter
+// 	%log;
+// 	%orig;
+// }
+// %end
+
 %end
 
 //------------------------------------------------------------------------------
 
 %ctor {
 	@autoreleasepool {
+		DebugLog(@"Loading Tweak...");
 		
-		if (IN_SPRINGBOARD == NO) { // init for MobileSMS ...
-			loadSettings();
-			
-			if (isEnabled) {
-				darkTheme = [[%c(CKUIThemeDark) alloc] init];
-				if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-					%init(Pad);
-				} else {
-					%init(Phone);
-				}
-				%init(Common);
+		loadSettings();
+		if (isEnabled) {
+			darkTheme = [[%c(CKUIThemeDark) alloc] init];
+			if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+				%init(Pad);
+			} else {
+				%init(Phone);
 			}
-			
-			// listen for settings changes
-			CFNotificationCenterAddObserver(CFNotificationCenterGetDarwinNotifyCenter(),
-				NULL,
-				(CFNotificationCallback)handleSettingsChanged,
-				kSettingsChangedID,
-				NULL,
-				CFNotificationSuspensionBehaviorDeliverImmediately
-			);
-
-		} else { // init for SpringBoard ...
-			
-			// skip if Noctis isn't installed
-			if (![[NSFileManager defaultManager] fileExistsAtPath:@"/Library/MobileSubstrate/DynamicLibraries/Noctis.dylib"]) {
-				return;
-			}
-			
-			// is NoctisSync enabled?
-			CFPreferencesAppSynchronize(kPrefsAppID);
-			Boolean valid;
-			Boolean value = CFPreferencesGetAppBooleanValue(kNoctisSyncKey, kPrefsAppID, &valid);
-			BOOL noctisSync = valid ? (BOOL)value : YES;
-			DebugLog(@"NoctisSync enabled? %@", noctisSync?@"yes":@"no");
-			
-			if (noctisSync) {
-				// sync Noctis' settings with ours
-				CFPreferencesAppSynchronize(kNoctisAppID);
-				Boolean valid;
-				Boolean value = CFPreferencesGetAppBooleanValue(kNoctisEnabledKey, kNoctisAppID, &valid);
-				DebugLog(@"Checking Noctis prefs, key is valid? %@", valid?@"yes":@"no");
-				DebugLog(@"Checking Noctis prefs, value is? %@", value?@"yes":@"no");
-				BOOL noctisEnabled = valid ? (BOOL)value : YES;
-				DebugLog(@"Noctis enabled? %@", noctisEnabled?@"yes":@"no");
-				handleNoctis(noctisEnabled);
-				
-				// listen for notifications
-				[[NSNotificationCenter defaultCenter]
-					addObserverForName:@"com.laughingquoll.noctis.enablenotification"
-					object:nil
-					queue:[NSOperationQueue mainQueue]
-					usingBlock:^(NSNotification *note) {
-						DebugLog(@"Notice: Noctis has been enabled!");
-						handleNoctis(YES);
-					}
-				];
-				[[NSNotificationCenter defaultCenter]
-					addObserverForName:@"com.laughingquoll.noctis.disablenotification"
-					object:nil
-					queue:[NSOperationQueue mainQueue]
-					usingBlock:^(NSNotification *note) {
-						DebugLog(@"Notice: Noctis has been disabled!");
-						handleNoctis(NO);
-					}
-				];
-			}
+			%init(Common);
 		}
+		
+		// listen for settings changes
+		CFNotificationCenterAddObserver(CFNotificationCenterGetDarwinNotifyCenter(),
+			NULL,
+			(CFNotificationCallback)handleSettingsChanged,
+			CFSTR("com.sticktron.darkmessages.settingschanged"),
+			NULL,
+			CFNotificationSuspensionBehaviorDeliverImmediately
+		);
 	}
 }

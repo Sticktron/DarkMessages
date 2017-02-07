@@ -8,6 +8,11 @@
 	<key>items</key>
 	<array>
 		
+		<dict>
+			<key>cell</key>
+			<string>PSGroupCell</string>
+		</dict>
+		
 		<!-- Enabled switch -->
 		<dict>
 			<key>cell</key>
@@ -27,33 +32,49 @@
 		</dict>
 		
 		
-		<!-- [] NOCTIS -->
+		<!-- [] CONTROL -->
 		<dict>
 			<key>cell</key>
 			<string>PSGroupCell</string>
-			<key>footerText</key>
-			<string>Noctis will control when DarkMessages is enabled.</string>
 		</dict>
+		
+		<!-- Noctis -->
 		<dict>
 			<key>cell</key>
 			<string>PSSwitchCell</string>
 			<key>cellClass</key>
 			<string>DMSwitchCell</string>
-			<key>id</key>
-			<string>NoctisSync</string>
 			<key>label</key>
-			<string>Noctis Sync</string>
+			<string>Control with Noctis</string>
 			<key>key</key>
-			<string>NoctisSync</string>
+			<string>NoctisControl</string>
 			<key>defaults</key>
 			<string>com.sticktron.darkmessages</string>
 			<key>default</key>
 			<true/>
-			<key>set</key>
-			<string>setNoctisSync:specifier:</string>
 			<key>PostNotification</key>
 			<string>com.sticktron.darkmessages.settingschanged</string>
 		</dict>
+		
+		<!-- Night Shift -->
+		<!--
+		<dict>
+			<key>cell</key>
+			<string>PSSwitchCell</string>
+			<key>cellClass</key>
+			<string>DMSwitchCell</string>
+			<key>label</key>
+			<string>Control with Night Shift</string>
+			<key>key</key>
+			<string>NightShiftControl</string>
+			<key>defaults</key>
+			<string>com.sticktron.darkmessages</string>
+			<key>default</key>
+			<false/>
+			<key>PostNotification</key>
+			<string>com.sticktron.darkmessages.settingschanged</string>
+		</dict>
+		-->
 		
 		
 		<!-- [] SUPPORT -->

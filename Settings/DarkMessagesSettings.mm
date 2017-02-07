@@ -1,7 +1,7 @@
 //
 //  Settings for DarkMessages
 //
-//  @sticktron
+//  ©2017 Sticktron
 //
 
 #import <Preferences/PSListController.h>
@@ -23,9 +23,10 @@
 	if (_specifiers == nil) {
 		_specifiers = [self loadSpecifiersFromPlistName:@"DarkMessages" target:self];
 		
+		// disable Noctis Control switch if Noctis is not installed
 		BOOL hasNoctis = [[NSFileManager defaultManager] fileExistsAtPath:@"/Library/MobileSubstrate/DynamicLibraries/Noctis.dylib"];
 		if (!hasNoctis) {
-			PSSpecifier *specifier = [self specifierForID:@"NoctisSync"];
+			PSSpecifier *specifier = [self specifierForID:@"NoctisControl"];
 			[specifier setProperty:@NO forKey:@"enabled"];
 			[specifier setProperty:@NO forKey:@"default"];
 		}
@@ -36,7 +37,6 @@
 	[super viewDidLoad];
 	
 	self.title = nil;
-	self.edgeToEdgeCells = YES;
 	
 	// add a heart button to the navbar
 	UIImage *heartImage = [[UIImage alloc] initWithContentsOfFile:@"/Library/PreferenceBundles/DarkMessages.bundle/heart.png"];
@@ -47,18 +47,16 @@
 	
 	// add table header
 	UIImage *logoImage = [UIImage imageWithContentsOfFile:@"/Library/PreferenceBundles/DarkMessages.bundle/header.png"];
-	UIImageView *logoView = [[UIImageView alloc] initWithImage:logoImage];
+	UIImageView *logoView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, 320, 120)];
 	logoView.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin;
+	logoView.image = logoImage;
 	UIView *headerView = [[UIView alloc] initWithFrame:logoView.frame];
 	headerView.backgroundColor = DARK_TINT_COLOR;
 	[headerView addSubview:logoView];
 	[self.table setTableHeaderView:headerView];
-	
 }
 - (void)viewWillAppear:(BOOL)animated {
 	[super viewWillAppear:animated];
-	
-	[self reload];
 	
 	// tint navbar
 	self.navigationController.navigationController.navigationBar.tintColor = TINT_COLOR;
@@ -69,31 +67,26 @@
 
 	[super viewWillDisappear:animated];
 }
-
-- (void)setNoctisSync:(id)value specifier:(PSSpecifier*)specifier {
-	[self setPreferenceValue:value specifier:specifier];
-	[self askForRespring];
-}
-- (void)askForRespring {
-	UIAlertView *alert = [[UIAlertView alloc]
-		initWithTitle:@"Restart SpringBoard"
-		message:@"Respring to apply this setting."
-		delegate:self
-		cancelButtonTitle:@"Later"
-		otherButtonTitles:@"Respring", nil
-	];
-	[alert show];
-}
-- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(int)buttonIndex {
-	if (buttonIndex == 1) { // YES
-		[self respringNow];
-	}
-}
-- (void)respringNow {
-	pid_t pid;
-	const char* args[] = { "killall", "-9", "backboardd", NULL };
-	posix_spawn(&pid, "/usr/bin/killall", NULL, NULL, (char* const*)args, NULL);
-}
+// - (void)askForRespring {
+// 	UIAlertView *alert = [[UIAlertView alloc]
+// 		initWithTitle:@"Restart SpringBoard"
+// 		message:@"Respring to apply this setting."
+// 		delegate:self
+// 		cancelButtonTitle:@"Later"
+// 		otherButtonTitles:@"Respring", nil
+// 	];
+// 	[alert show];
+// }
+// - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(int)buttonIndex {
+// 	if (buttonIndex == 1) { // YES
+// 		[self respringNow];
+// 	}
+// }
+// - (void)respringNow {
+// 	pid_t pid;
+// 	const char* args[] = { "killall", "-9", "backboardd", NULL };
+// 	posix_spawn(&pid, "/usr/bin/killall", NULL, NULL, (char* const*)args, NULL);
+// }
 
 - (void)openEmail {
 	NSString *subject = @"DarkMessages Support";
