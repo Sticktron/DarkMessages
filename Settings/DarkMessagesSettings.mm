@@ -13,6 +13,7 @@
 #define TINT_COLOR 			[UIColor colorWithWhite:0.20 alpha:1] //#333333
 #define DARK_TINT_COLOR 	[UIColor colorWithWhite:0.09 alpha:1] //#161616
 #define BLUE_COLOR 			[UIColor colorWithRed:15/255.0 green:132/255.0 blue:252/255.0 alpha:1] //#0F84FC
+#define HEADER_HEIGHT 		120.0f
 
 
 @interface DarkMessagesSettingsController : PSListController
@@ -44,16 +45,6 @@
 	heartButton.imageInsets = (UIEdgeInsets){2, 0, -2, 0};
 	heartButton.tintColor = TINT_COLOR;
 	[self.navigationItem setRightBarButtonItem:heartButton];
-	
-	// add table header
-	UIImage *logoImage = [UIImage imageWithContentsOfFile:@"/Library/PreferenceBundles/DarkMessages.bundle/header.png"];
-	UIImageView *logoView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, 320, 120)];
-	logoView.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin;
-	logoView.image = logoImage;
-	UIView *headerView = [[UIView alloc] initWithFrame:logoView.frame];
-	headerView.backgroundColor = DARK_TINT_COLOR;
-	[headerView addSubview:logoView];
-	[self.table setTableHeaderView:headerView];
 }
 - (void)viewWillAppear:(BOOL)animated {
 	[super viewWillAppear:animated];
@@ -88,6 +79,28 @@
 // 	posix_spawn(&pid, "/usr/bin/killall", NULL, NULL, (char* const*)args, NULL);
 // }
 
+- (CGFloat)tableView:(id)tableView heightForHeaderInSection:(NSInteger)section {
+	if (section == 0) {
+		return HEADER_HEIGHT;
+	} else {
+		return [super tableView:tableView heightForHeaderInSection:section];
+	}
+}
+- (id)tableView:(id)tableView viewForHeaderInSection:(NSInteger)section {
+	if (section == 0) {
+		// add table header
+		UIImage *logoImage = [UIImage imageWithContentsOfFile:@"/Library/PreferenceBundles/DarkMessages.bundle/header.png"];
+		UIImageView *logoView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, 320, HEADER_HEIGHT)];
+		logoView.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin;
+		logoView.image = logoImage;
+		UIView *headerView = [[UIView alloc] initWithFrame:logoView.frame];
+		headerView.backgroundColor = DARK_TINT_COLOR;
+		[headerView addSubview:logoView];
+		return headerView;
+	} else {
+		return [super tableView:tableView viewForHeaderInSection:section];
+	}
+}
 - (void)openEmail {
 	NSString *subject = @"DarkMessages Support";
 	NSString *body = @"";
