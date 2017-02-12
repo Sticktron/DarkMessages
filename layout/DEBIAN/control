@@ -1,13 +1,13 @@
 Package: com.sticktron.darkmessages
 Name: DarkMessages (iOS 10)
 Depends: firmware (>= 10.0), mobilesubstrate, preferenceloader
-Version: 1.1.2
+Version: 1.1.3~b1
 Architecture: iphoneos-arm
 Description: Dark mode for the Messages app.
  Change Log
- + Added support for NightShift
- + Added support for Noctis
- + minor fixes
+ + Quick Reply is now themed
+ + handle changing mode when Messages is open more gracefully
+ + better Noctis and NightShift control behaviour
 Maintainer: Sticktron <sticktron@hotmail.com>
 Author: Sticktron <sticktron@hotmail.com>
 Section: Tweaks
