@@ -4,20 +4,47 @@
 //  ©2017 Sticktron
 //
 
+#define DEBUG_PREFIX @"[DarkMessagesSettings]"
+#import "../DebugLog.h"
+
+#import "../DarkMessages.h"
 #import <Preferences/PSListController.h>
 #import <Preferences/PSSpecifier.h>
 #import <Preferences/PSSwitchTableCell.h>
+#import <spawn.h>
 
-#define TINT_COLOR 			[UIColor colorWithWhite:0.20 alpha:1] //#333333
-#define DARK_TINT_COLOR 	[UIColor colorWithWhite:0.09 alpha:1] //#161616
-#define BLUE_COLOR 			[UIColor colorWithRed:15/255.0 green:132/255.0 blue:252/255.0 alpha:1] //#0F84FC
-#define HEADER_HEIGHT 		120.0f
+#define TINT_COLOR 			[UIColor colorWithWhite:0.25 alpha:1] //#404040
+#define LINK_COLOR			[UIColor blackColor]
+#define BLUE_TINT_COLOR		[UIColor colorWithRed:15/255.0 green:132/255.0 blue:252/255.0 alpha:1] //#0F84FC
+#define HEADER_HEIGHT 		120.0
+
+static PSListController *controller;
+
+static void handleSettingsChanged(CFNotificationCenterRef center, void *observer, CFStringRef name, const void *object, CFDictionaryRef userInfo) {
+	DebugLog(@"Notice: %@", name);
+	[controller reloadSpecifierID:@"Enabled" animated:YES];
+}
 
 
 @interface DarkMessagesSettingsController : PSListController
 @end
 
 @implementation DarkMessagesSettingsController
+- (instancetype)init {
+	if (self = [super init]) {
+		controller = self;
+		
+		// listen for changes from helper (to update the Dark Mode switch)
+		CFNotificationCenterAddObserver(CFNotificationCenterGetDarwinNotifyCenter(),
+			NULL,
+			(CFNotificationCallback)handleSettingsChanged,
+			kSettingsChangedNotification,
+			NULL,
+			CFNotificationSuspensionBehaviorDeliverImmediately
+		);
+	}
+	return self;
+}
 - (id)specifiers {
 	if (_specifiers == nil) {
 		_specifiers = [self loadSpecifiersFromPlistName:@"DarkMessages" target:self];
@@ -32,10 +59,33 @@
 	}
 	return _specifiers;
 }
+- (void)setNoctisControlValue:(id)value specifier:(id)specifier {
+	[super setPreferenceValue:value specifier:specifier];
+	
+	if ([value boolValue]) {
+		PSSpecifier *spec = [self specifierForID:@"NightShiftControl"];
+		[self setPreferenceValue:@NO specifier:spec];
+		[self reloadSpecifier:spec animated:YES];
+	}
+	
+	CFNotificationCenterPostNotification(CFNotificationCenterGetDarwinNotifyCenter(), kSettingsChangedNotification, NULL, NULL, YES);
+}
+- (void)setNightShiftControlValue:(id)value specifier:(id)specifier {
+	[super setPreferenceValue:value specifier:specifier];
+	
+	if ([value boolValue]) {
+		PSSpecifier *spec = [self specifierForID:@"NoctisControl"];
+		[self setPreferenceValue:@NO specifier:spec];
+		[self reloadSpecifier:spec animated:YES];
+	}
+	
+	CFNotificationCenterPostNotification(CFNotificationCenterGetDarwinNotifyCenter(), kSettingsChangedNotification, NULL, NULL, YES);
+}
 - (void)viewDidLoad {
 	[super viewDidLoad];
 	
 	self.title = nil;
+	
 	
 	// add a heart button to the navbar
 	UIImage *heartImage = [[UIImage alloc] initWithContentsOfFile:@"/Library/PreferenceBundles/DarkMessages.bundle/heart.png"];
@@ -46,15 +96,13 @@
 }
 - (void)viewWillAppear:(BOOL)animated {
 	[super viewWillAppear:animated];
-	
 	// tint navbar
 	self.navigationController.navigationController.navigationBar.tintColor = TINT_COLOR;
 }
 - (void)viewWillDisappear:(BOOL)animated {
+	[super viewWillDisappear:animated];
 	// un-tint navbar
 	self.navigationController.navigationController.navigationBar.tintColor = nil;
-
-	[super viewWillDisappear:animated];
 }
 - (CGFloat)tableView:(id)tableView heightForHeaderInSection:(NSInteger)section {
 	if (section == 0) {
@@ -71,7 +119,7 @@
 		logoView.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin;
 		logoView.image = logoImage;
 		UIView *headerView = [[UIView alloc] initWithFrame:logoView.frame];
-		headerView.backgroundColor = DARK_TINT_COLOR;
+		headerView.backgroundColor = [UIColor colorWithWhite:0.09 alpha:1]; //#171717
 		[headerView addSubview:logoView];
 		return headerView;
 	} else {
@@ -115,10 +163,28 @@
 	NSString *url = @"https://paypal.com/cgi-bin/webscr?cmd=_donations&business=BKGYMJNGXM424&lc=CA&item_name=Donation%20to%20Sticktron&item_number=DarkMessages&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_SM%2egif%3aNonHosted";
 	[[UIApplication sharedApplication] openURL:[NSURL URLWithString:url]];
 }
+// - (void)respring {
+// 	pid_t pid;
+// 	const char* args[] = { "killall", "-9", "backboardd", NULL };
+// 	posix_spawn(&pid, "/usr/bin/killall", NULL, NULL, (char* const*)args, NULL);
+// }
 @end
 
 
-// Custom Button Cell ----------------------------------------------------------
+// Custom Table Cells ----------------------------------------------------------
+
+@interface DMLinkCell : PSTableCell
+@end
+
+@implementation DMLinkCell
+- (void)layoutSubviews {
+	[super layoutSubviews];
+	[self setTintColor:BLUE_TINT_COLOR];
+	[self.textLabel setTextColor:LINK_COLOR];
+}
+@end
+
+//------------------------------------------------------------------------------
 
 @interface DMButtonCell : PSTableCell
 @end
@@ -126,22 +192,19 @@
 @implementation DMButtonCell
 - (void)layoutSubviews {
 	[super layoutSubviews];
-	
-	[self.textLabel setTextColor:TINT_COLOR];
+	[self.textLabel setTextColor:BLUE_TINT_COLOR];
 }
 @end
 
-
-// Custom Switch Cell ----------------------------------------------------------
+//------------------------------------------------------------------------------
 
 @interface DMSwitchCell : PSSwitchTableCell
 @end
-
 @implementation DMSwitchCell
 - (id)initWithStyle:(int)arg1 reuseIdentifier:(id)arg2 specifier:(id)arg3 {
 	self = [super initWithStyle:arg1 reuseIdentifier:arg2 specifier:arg3];
 	if (self) {
-		[((UISwitch *)[self control]) setOnTintColor:BLUE_COLOR];
+		[((UISwitch *)[self control]) setOnTintColor:BLUE_TINT_COLOR];
 	}
 	return self;
 }
