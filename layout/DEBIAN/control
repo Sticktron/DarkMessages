@@ -1,5 +1,5 @@
 Package: com.sticktron.darkmessages
-Name: DarkMessages (iOS 10)
+Name: DarkMessages Beta (iOS 10)
 Depends: firmware (>= 10.0), mobilesubstrate, preferenceloader
 Version: 1.1.3~b1
 Architecture: iphoneos-arm
