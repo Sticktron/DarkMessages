@@ -1,1 +1,9 @@
-{ Filter = { Bundles = ( "com.apple.MobileSMS", "com.apple.MobileSMS.MessagesNotificationExtension", "com.apple.mobilesms.compose" ); }; }
+{
+	Filter = {
+		Bundles = (
+			"com.apple.MobileSMS",
+			"com.apple.MobileSMS.MessagesNotificationExtension",
+			"com.apple.mobilesms.compose"
+		);
+	};
+}
