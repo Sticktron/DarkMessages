@@ -8,7 +8,8 @@ DarkMessages_FILES = Tweak.xm
 DarkMessages_CFLAGS = -fobjc-arc
 include $(THEOS_MAKE_PATH)/tweak.mk
 
-SUBPROJECTS += DarkMessages_Helper
+SUBPROJECTS += DarkMessages_SBHelper
+SUBPROJECTS += DarkMessages_BBHelper
 SUBPROJECTS += Settings
 include $(THEOS_MAKE_PATH)/aggregate.mk
 
