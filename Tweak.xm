@@ -2,7 +2,7 @@
 //  Tweak.xm
 //  DarkMessages
 //
-//  Dark theme for the iOS 10 Messages app.
+//  Forces use of the dark theme found in ChatKit in iOS 10.
 //
 //  ©2017 Sticktron
 //
@@ -11,6 +11,7 @@
 #import "DebugLog.h"
 
 #import "DarkMessages.h"
+
 
 static BOOL isEnabled;
 static CKUIThemeDark *darkTheme;
@@ -21,11 +22,11 @@ static void loadSettings() {
 	Boolean valid;
 	Boolean value = CFPreferencesGetAppBooleanValue(kPrefsEnabledKey, kPrefsAppID, &valid);
 	isEnabled = valid ? (BOOL)value : YES; // enabled by default
-	DebugLog(@"Loaded settings >> isEnabled? %@", isEnabled?@"yes":@"no");
+	DebugLogC(@"Loaded settings >> isEnabled? %@", isEnabled?@"yes":@"no");
 }
 
 static void askToDie() {
-	DebugLog(@"askToDie()");
+	DebugLogC(@"askToDie()");
 	
 	UIAlertController *alert = [UIAlertController
 		alertControllerWithTitle:@"Dark Mode Toggled"
@@ -37,7 +38,7 @@ static void askToDie() {
 		actionWithTitle:@"Now"
 		style:UIAlertActionStyleDestructive
 	    handler:^(UIAlertAction *action) {
-			DebugLog(@"asking SpringBoard to restarted MobileSMS...");
+			DebugLogC(@"asking SpringBoard to restarted MobileSMS...");
 			CFNotificationCenterPostNotification(CFNotificationCenterGetDarwinNotifyCenter(),
 				kRelaunchMobileSMSNotification, NULL, NULL, true
 			);
@@ -55,8 +56,7 @@ static void askToDie() {
 }
 
 static void handleSettingsChanged(CFNotificationCenterRef center, void *observer, CFStringRef name, const void *object, CFDictionaryRef userInfo) {
-	DebugLog(@"*** Notice: %@", name);
-	DebugLog(@"handleSettingsChanged() responding");
+	DebugLogC(@"*** Notice: %@", name);
 	
 	BOOL oldSetting = isEnabled;
 	loadSettings();
@@ -64,13 +64,13 @@ static void handleSettingsChanged(CFNotificationCenterRef center, void *observer
 	// if in MobileSMS: toggle dark mode if necessary
  	if ([NSBundle.mainBundle.bundleIdentifier isEqualToString:@"com.apple.MobileSMS"]) {
 		if (isEnabled != oldSetting) {
-			DebugLog(@"Dark mode has changed, we need to restart MobileSMS");
+			DebugLogC(@"Dark mode has changed, we need to restart MobileSMS");
 			
 			if ([[UIApplication sharedApplication] isSuspended]) {
-				DebugLog(@"MobileSMS is suspended, killing quietly");
+				DebugLogC(@"MobileSMS is suspended, killing quietly");
 				[[UIApplication sharedApplication] terminateWithSuccess];
 			} else {
-				DebugLog(@"MobileSMS is front, asking user to restart");
+				DebugLogC(@"MobileSMS is front, asking user to restart");
 				askToDie();
 			}
 		}
@@ -176,7 +176,7 @@ static void handleSettingsChanged(CFNotificationCenterRef center, void *observer
 
 %ctor {
 	@autoreleasepool {
-		DebugLog(@"Loading Tweak...");
+		DebugLogC(@"Loading Tweak...");
 		
 		loadSettings();
 		

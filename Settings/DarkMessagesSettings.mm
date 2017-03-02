@@ -21,7 +21,7 @@
 static PSListController *controller;
 
 static void handleSettingsChanged(CFNotificationCenterRef center, void *observer, CFStringRef name, const void *object, CFDictionaryRef userInfo) {
-	DebugLog(@"Notice: %@", name);
+	DebugLogC(@"Notice: %@", name);
 	[controller reloadSpecifierID:@"Enabled" animated:YES];
 }
 
