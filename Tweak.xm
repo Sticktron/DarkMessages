@@ -52,7 +52,7 @@ static void askToDie() {
 		}]
 	];
 	
-	[[[UIWindow keyWindow] rootViewController] presentViewController:alert animated:YES completion:nil];
+	[[[[UIApplication sharedApplication] keyWindow] rootViewController] presentViewController:alert animated:YES completion:nil];
 }
 
 static void handleSettingsChanged(CFNotificationCenterRef center, void *observer, CFStringRef name, const void *object, CFDictionaryRef userInfo) {
