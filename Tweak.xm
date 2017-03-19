@@ -18,10 +18,9 @@ static CKUIThemeDark *darkTheme;
 
 
 static void loadSettings() {
-	CFPreferencesAppSynchronize(kPrefsAppID);
-	Boolean valid;
-	Boolean value = CFPreferencesGetAppBooleanValue(kPrefsEnabledKey, kPrefsAppID, &valid);
-	isEnabled = valid ? (BOOL)value : YES; // enabled by default
+	NSDictionary *prefs = [NSDictionary dictionaryWithContentsOfFile:kPrefsPlistPath];
+	DebugLogC(@"prefs = %@", prefs);
+	isEnabled = (prefs && prefs[kPrefsEnabledKey]) ? [prefs[kPrefsEnabledKey] boolValue] : YES;
 	DebugLogC(@"Loaded settings >> isEnabled? %@", isEnabled?@"yes":@"no");
 }
 

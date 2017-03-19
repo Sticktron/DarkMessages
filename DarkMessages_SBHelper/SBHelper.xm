@@ -26,8 +26,9 @@ static void setDarkMode(BOOL enabled) {
 		DebugLogC(@"Dark Mode changed to: %d", isEnabled);
 		
 		// update prefs
-		CFPreferencesSetAppValue(kPrefsEnabledKey, enabled ? kCFBooleanTrue : kCFBooleanFalse, kPrefsAppID);
-		CFPreferencesAppSynchronize(kPrefsAppID);
+		NSMutableDictionary *settings = [NSMutableDictionary dictionaryWithContentsOfFile:kPrefsPlistPath];
+		settings[kPrefsEnabledKey] = isEnabled ? @YES : @NO;
+		[settings writeToFile:kPrefsPlistPath atomically:YES];
 		
 		// tell MobileSMS it needs to restart
 		CFNotificationCenterPostNotification(CFNotificationCenterGetDarwinNotifyCenter(),
@@ -85,19 +86,9 @@ static void syncStateWithTriggers() {
 }
 
 static void loadSettings() {
-	DebugLogC(@"loadSettings()");
+	DebugLogC(@"loading settings...");
 	
-	NSDictionary *settings = nil;
-	CFPreferencesAppSynchronize(kPrefsAppID);
-	CFArrayRef keyList = CFPreferencesCopyKeyList(kPrefsAppID, kCFPreferencesCurrentUser, kCFPreferencesAnyHost);
-	if (keyList) {
-		settings = (NSDictionary *)CFBridgingRelease(CFPreferencesCopyMultiple(keyList, kPrefsAppID, kCFPreferencesCurrentUser, kCFPreferencesAnyHost));
-		DebugLogC(@"found user prefs: %@", settings);
-		CFRelease(keyList);
-	} else {
-		DebugLogC(@"no user prefs, using defaults");
-	}
-	
+	NSDictionary *settings = [NSMutableDictionary dictionaryWithContentsOfFile:kPrefsPlistPath];
 	isEnabled = settings[@"Enabled"] ? [settings[@"Enabled"] boolValue] : YES;
 	nightShiftControl = settings[@"NightShiftControl"] ? [settings[@"NightShiftControl"] boolValue] : NO;
 	noctisControl = settings[@"NoctisControl"] ? [settings[@"NoctisControl"] boolValue] : NO;

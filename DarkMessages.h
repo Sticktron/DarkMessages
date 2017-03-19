@@ -5,8 +5,8 @@
 //  ©2017 Sticktron
 //
 
-#define kPrefsAppID 		CFSTR("com.sticktron.darkmessages")
-#define kPrefsEnabledKey 	CFSTR("Enabled")
+#define kPrefsPlistPath 	@"/var/mobile/Library/Preferences/com.sticktron.darkmessages.plist"
+#define kPrefsEnabledKey 	@"Enabled"
 
 #define kNoctisAppID 		CFSTR("com.laughingquoll.noctis")
 #define kNoctisEnabledKey 	CFSTR("LQDDarkModeEnabled")

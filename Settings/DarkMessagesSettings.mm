@@ -59,6 +59,25 @@ static void handleSettingsChanged(CFNotificationCenterRef center, void *observer
 	}
 	return _specifiers;
 }
+- (id)readPreferenceValue:(PSSpecifier *)specifier {
+	NSDictionary *settings = [NSDictionary dictionaryWithContentsOfFile:kPrefsPlistPath];
+	if (!settings[specifier.properties[@"key"]]) {
+		return specifier.properties[@"default"];
+	}
+	return settings[specifier.properties[@"key"]];
+}
+
+- (void)setPreferenceValue:(id)value specifier:(PSSpecifier *)specifier {
+	NSMutableDictionary *settings = [NSMutableDictionary dictionary];
+	[settings addEntriesFromDictionary:[NSDictionary dictionaryWithContentsOfFile:kPrefsPlistPath]];
+	[settings setObject:value forKey:specifier.properties[@"key"]];
+	[settings writeToFile:kPrefsPlistPath atomically:YES];
+
+	CFStringRef notificationValue = (__bridge CFStringRef)specifier.properties[@"PostNotification"];
+	if (notificationValue) {
+		CFNotificationCenterPostNotification(CFNotificationCenterGetDarwinNotifyCenter(), notificationValue, NULL, NULL, YES);
+	}
+}
 - (void)setNoctisControlValue:(id)value specifier:(id)specifier {
 	[super setPreferenceValue:value specifier:specifier];
 	
