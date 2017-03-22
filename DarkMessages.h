@@ -6,7 +6,6 @@
 //
 
 #define kPrefsPlistPath 	@"/var/mobile/Library/Preferences/com.sticktron.darkmessages.plist"
-#define kPrefsEnabledKey 	@"Enabled"
 
 #define kNoctisAppID 		CFSTR("com.laughingquoll.noctis")
 #define kNoctisEnabledKey 	CFSTR("LQDDarkModeEnabled")

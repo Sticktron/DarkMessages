@@ -11,17 +11,21 @@
 #import "DebugLog.h"
 
 #import "DarkMessages.h"
+#import <Foundation/NSDistributedNotificationCenter.h>
 
 
 static BOOL isEnabled;
 static CKUIThemeDark *darkTheme;
 
+static NSString *bundleID;
+
 
 static void loadSettings() {
-	NSDictionary *prefs = [NSDictionary dictionaryWithContentsOfFile:kPrefsPlistPath];
-	DebugLogC(@"prefs = %@", prefs);
-	isEnabled = (prefs && prefs[kPrefsEnabledKey]) ? [prefs[kPrefsEnabledKey] boolValue] : YES;
-	DebugLogC(@"Loaded settings >> isEnabled? %@", isEnabled?@"yes":@"no");
+	DebugLogC(@"loading settings...");
+
+	NSDictionary *settings = [NSMutableDictionary dictionaryWithContentsOfFile:kPrefsPlistPath];
+	isEnabled = settings[@"Enabled"] ? [settings[@"Enabled"] boolValue] : YES;
+	DebugLogC(@"settings >> DarkMode:%@", isEnabled?@"yes":@"no");
 }
 
 static void askToDie() {
@@ -60,16 +64,18 @@ static void handleSettingsChanged(CFNotificationCenterRef center, void *observer
 	BOOL oldSetting = isEnabled;
 	loadSettings();
 	
-	// if in MobileSMS: toggle dark mode if necessary
- 	if ([NSBundle.mainBundle.bundleIdentifier isEqualToString:@"com.apple.MobileSMS"]) {
-		if (isEnabled != oldSetting) {
-			DebugLogC(@"Dark mode has changed, we need to restart MobileSMS");
-			
+	if (isEnabled != oldSetting) {
+		DebugLogC(@"Dark mode has changed, let's do our thing...");
+		
+		if ([bundleID isEqualToString:@"com.apple.MobileSMS"]) {
+			// The Messages app needs to be restarted.
+			// If it's active, ask the user for permission to restart.
+			// If it's suspended, just terminate it.
 			if ([[UIApplication sharedApplication] isSuspended]) {
 				DebugLogC(@"MobileSMS is suspended, killing quietly");
 				[[UIApplication sharedApplication] terminateWithSuccess];
 			} else {
-				DebugLogC(@"MobileSMS is front, asking user to restart");
+				DebugLogC(@"MobileSMS is active, asking user to restart it");
 				askToDie();
 			}
 		}
@@ -175,7 +181,8 @@ static void handleSettingsChanged(CFNotificationCenterRef center, void *observer
 
 %ctor {
 	@autoreleasepool {
-		DebugLogC(@"Loading Tweak...");
+		bundleID = NSBundle.mainBundle.bundleIdentifier;
+		DebugLogC(@"loaded into process: %@", bundleID);
 		
 		loadSettings();
 		

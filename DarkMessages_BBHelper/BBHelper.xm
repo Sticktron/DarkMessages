@@ -14,8 +14,16 @@
 
 static BOOL isEnabled;
 static BOOL nightShiftControl;
-static BOOL noctisControl;
 
+
+static void loadSettings() {
+	DebugLogC(@"loading settings...");
+	
+	NSDictionary *settings = [NSMutableDictionary dictionaryWithContentsOfFile:kPrefsPlistPath];
+	isEnabled = settings[@"Enabled"] ? [settings[@"Enabled"] boolValue] : YES;
+	nightShiftControl = settings[@"NightShiftControl"] ? [settings[@"NightShiftControl"] boolValue] : NO;
+	DebugLogC(@"settings >> DarkMode:%@; NightShiftControl:%@", isEnabled?@"yes":@"no", nightShiftControl?@"yes":@"no");
+}
 
 static void setDarkMode(BOOL enabled) {
 	DebugLogC(@"setDarkMode(%@) called", enabled?@"yes":@"no");
@@ -27,26 +35,14 @@ static void setDarkMode(BOOL enabled) {
 		
 		// update prefs
 		NSMutableDictionary *settings = [NSMutableDictionary dictionaryWithContentsOfFile:kPrefsPlistPath];
-		settings[kPrefsEnabledKey] = isEnabled ? @YES : @NO;
+		settings[@"Enabled"] = isEnabled ? @YES : @NO;
 		[settings writeToFile:kPrefsPlistPath atomically:YES];
-		
-		// tell MobileSMS it needs to restart
 		CFNotificationCenterPostNotification(CFNotificationCenterGetDarwinNotifyCenter(),
 			kSettingsChangedNotification, NULL, NULL, true
 		);
 	} else {
 		DebugLogC(@"already in mode (%@)", enabled?@"ON":@"OFF");
 	}
-}
-
-static void loadSettings() {
-	DebugLogC(@"loading settings...");
-	
-	NSDictionary *settings = [NSMutableDictionary dictionaryWithContentsOfFile:kPrefsPlistPath];
-	isEnabled = settings[@"Enabled"] ? [settings[@"Enabled"] boolValue] : YES;
-	nightShiftControl = settings[@"NightShiftControl"] ? [settings[@"NightShiftControl"] boolValue] : NO;
-	noctisControl = settings[@"NoctisControl"] ? [settings[@"NoctisControl"] boolValue] : NO;
-	DebugLogC(@"settings >> DarkMode:%@; NightShiftControl:%@; NoctisControl:%@", isEnabled?@"yes":@"no", nightShiftControl?@"yes":@"no", noctisControl?@"yes":@"no");
 }
 
 static void handleSettingsChanged(CFNotificationCenterRef center, void *observer, CFStringRef name, const void *object, CFDictionaryRef userInfo) {
