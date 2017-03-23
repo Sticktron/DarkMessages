@@ -75,9 +75,6 @@
 		NSMutableDictionary *settings = [NSMutableDictionary dictionaryWithContentsOfFile:kPrefsPlistPath];
 		settings[@"Enabled"] = self.isDark ? @YES : @NO;
 		[settings writeToFile:kPrefsPlistPath atomically:YES];
-		CFNotificationCenterPostNotification(CFNotificationCenterGetDarwinNotifyCenter(),
-			kSettingsChangedNotification, NULL, NULL, true
-		);
 		
 		// deal with quick reply extension
 		DebugLogC(@"dismiss QR controller: %@", self.qrViewController);
@@ -85,6 +82,13 @@
 			[self.qrViewController dismissPresentedViewControllerAndClearNotification:YES animated:YES];
 		}
 		[self killQR];
+		[self killQR]; // kill with fire
+		[self killQR]; // die u cruel, cruel bastard
+		
+		// notify that prefs have changed
+		CFNotificationCenterPostNotification(CFNotificationCenterGetDarwinNotifyCenter(),
+			kSettingsChangedNotification, NULL, NULL, true
+		);
 	} else {
 		DebugLogC(@"already in mode (%@)", enabled?@"ON":@"OFF");
 	}
