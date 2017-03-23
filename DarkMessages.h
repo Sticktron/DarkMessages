@@ -46,3 +46,14 @@
 - (id)applicationWithBundleIdentifier:(id)arg1;
 - (void)applicationService:(id)arg1 suspendApplicationWithBundleIdentifier:(id)arg2;
 @end
+
+@interface NCNotificationRequest : NSObject
+@property (nonatomic, readonly, copy) NSString *sectionIdentifier;
+@property (nonatomic, readonly, copy) NSString *categoryIdentifier;
+@end
+
+@interface NCNotificationViewController : UIViewController
+- (id)initWithNotificationRequest:(NCNotificationRequest *)arg1;
+- (BOOL)dismissPresentedViewControllerAndClearNotification:(BOOL)arg1 animated:(BOOL)arg2;
+- (void)dismissViewControllerWithTransition:(int)arg1 completion:(id /* block */)arg2;
+@end
