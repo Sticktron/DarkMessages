@@ -57,15 +57,15 @@ static void handleRelaunchMobileSMS(CFNotificationCenterRef center, void *observ
 
 %hook NCNotificationViewController
 - (id)initWithNotificationRequest:(NCNotificationRequest *)request {
-	DebugLogC(@"##########  initWithNotificationRequest  ##########");
-	DebugLogC(@"sectionID = %@", [request sectionIdentifier]);
-	DebugLogC(@"categoryID = %@", [request categoryIdentifier]);
+	// DebugLogC(@"##########  initWithNotificationRequest  ##########");
+	// DebugLogC(@"sectionID = %@", [request sectionIdentifier]);
+	// DebugLogC(@"categoryID = %@", [request categoryIdentifier]);
 
 	self = %orig;
 
 	if ([request.sectionIdentifier isEqualToString:@"com.apple.MobileSMS"] && [request.categoryIdentifier isEqualToString:@"MessageExtension"]) {
 		dmc.qrViewController = self;
-		DebugLogC(@"QuickReply viewController = %@", dmc.qrViewController);
+		DebugLogC(@"got QuickReply ViewController: %@", dmc.qrViewController);
 	}
 
 	return self;
