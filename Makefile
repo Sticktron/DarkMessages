@@ -17,4 +17,4 @@ after-stage::
 	find . -name ".DS_STORE" -delete
 
 after-install::
-	install.exec "killall backboardd"
+	install.exec "killall -HUP backboardd"
