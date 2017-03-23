@@ -83,8 +83,8 @@
 		DebugLogC(@"dismiss QR controller: %@", self.qrViewController);
 		if (self.qrViewController && [self.qrViewController respondsToSelector:@selector(dismissPresentedViewControllerAndClearNotification:animated:)]) {
 			[self.qrViewController dismissPresentedViewControllerAndClearNotification:YES animated:YES];
-			[self killQR];
 		}
+		[self killQR];
 	} else {
 		DebugLogC(@"already in mode (%@)", enabled?@"ON":@"OFF");
 	}
