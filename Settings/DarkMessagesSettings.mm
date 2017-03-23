@@ -79,7 +79,7 @@ static void handleSettingsChanged(CFNotificationCenterRef center, void *observer
 	}
 }
 - (void)setNoctisControlValue:(id)value specifier:(id)specifier {
-	[super setPreferenceValue:value specifier:specifier];
+	[self setPreferenceValue:value specifier:specifier];
 	
 	if ([value boolValue]) {
 		PSSpecifier *spec = [self specifierForID:@"NightShiftControl"];
@@ -90,7 +90,7 @@ static void handleSettingsChanged(CFNotificationCenterRef center, void *observer
 	CFNotificationCenterPostNotification(CFNotificationCenterGetDarwinNotifyCenter(), kSettingsChangedNotification, NULL, NULL, YES);
 }
 - (void)setNightShiftControlValue:(id)value specifier:(id)specifier {
-	[super setPreferenceValue:value specifier:specifier];
+	[self setPreferenceValue:value specifier:specifier];
 	
 	if ([value boolValue]) {
 		PSSpecifier *spec = [self specifierForID:@"NoctisControl"];

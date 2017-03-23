@@ -63,8 +63,8 @@
 			<string>com.sticktron.darkmessages</string>
 			<key>default</key>
 			<false/>
-			<!-- <key>PostNotification</key>
-			<string>com.sticktron.darkmessages.settingschanged</string> -->
+			<key>PostNotification</key>
+			<string>com.sticktron.darkmessages.settingschanged</string>
 		</dict>
 		
 		<!-- Noctis -->
@@ -85,24 +85,9 @@
 			<string>com.sticktron.darkmessages</string>
 			<key>default</key>
 			<false/>
-			<!-- <key>PostNotification</key>
-			<string>com.sticktron.darkmessages.settingschanged</string> -->
+			<key>PostNotification</key>
+			<string>com.sticktron.darkmessages.settingschanged</string>
 		</dict>
-		
-		<!-- Apply Changes
-		<dict>
-			<key>cell</key>
-			<string>PSButtonCell</string>
-			<key>cellClass</key>
-			<string>DMButtonCell</string>
-			<key>label</key>
-			<string>Apply Changes (Respring)</string>
-			<key>alignment</key>
-			<string>1</string>
-			<key>action</key>
-			<string>respring</string>
-		</dict>
-		-->
 		
 		
 		<!-- [] SUPPORT -->
