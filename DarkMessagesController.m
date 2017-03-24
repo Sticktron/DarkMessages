@@ -6,11 +6,11 @@
 //
 
 #define DEBUG_PREFIX @"[DarkMessagesController]"
-#import "../DebugLog.h"
+#import "DebugLog.h"
 
 
 #import "DarkMessagesController.h"
-#import "../DarkMessages.h"
+#import "DarkMessages.h"
 #import <spawn.h>
 
 

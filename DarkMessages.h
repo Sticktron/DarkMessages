@@ -33,6 +33,12 @@
 - (void)enableBlueLightReduction:(BOOL)arg1 withOption:(int)arg2;
 @end
 
+@interface CBBlueLightClient : NSObject
++ (BOOL)supportsBlueLightReduction;
+- (BOOL)setEnabled:(BOOL)arg1;
+- (BOOL)setEnabled:(BOOL)arg1 withOption:(int)arg2;
+@end
+
 @interface AXBackBoardServer : NSObject
 + (id)server;
 - (BOOL)blueLightStatusEnabled;

@@ -1,17 +1,19 @@
 //
-//  DarkMessages_SBHelper.xm
+//  DarkMessages_SB.xm
 //  DarkMessages
 //
 //  ©2017 Sticktron
 //
 
-#define DEBUG_PREFIX @"[DarkMessages_SBHelper]"
-#import "../DebugLog.h"
+#define DEBUG_PREFIX @"[DarkMessages_SB]"
+#import "DebugLog.h"
 
+#import "DarkMessages.h"
 #import "DarkMessagesController.h"
-#import "../DarkMessages.h"
+
 
 static DarkMessagesController *dmc;
+
 
 static void handleSettingsChanged(CFNotificationCenterRef center, void *observer, CFStringRef name, const void *object, CFDictionaryRef userInfo) {
 	DebugLogC(@"*** Notice: %@", name);
@@ -43,7 +45,9 @@ static void handleRelaunchMobileSMS(CFNotificationCenterRef center, void *observ
 	});
 }
 
+
 //------------------------------------------------------------------------------
+
 
 %hook SpringBoard
 - (void)applicationDidFinishLaunching:(UIApplication *)application {
@@ -72,11 +76,36 @@ static void handleRelaunchMobileSMS(CFNotificationCenterRef center, void *observ
 }
 %end
 
+%hook CBBlueLightClient
+- (BOOL)setEnabled:(BOOL)enabled {
+	DebugLog(@"BL turning %@", enabled?@"ON":@"OFF");
+	
+	BOOL result = %orig;
+	DebugLog(@"result = %d", result);
+	
+	if (dmc) [dmc setDarkMode:enabled];
+	
+	return result;
+}
+- (BOOL)setEnabled:(BOOL)enabled withOption:(int)option {
+	DebugLog(@"BL turning %@ (with option: %d)", enabled?@"ON":@"OFF", option);
+	
+	BOOL result = %orig;
+	DebugLog(@"result = %d", result);
+	
+	if (dmc) [dmc setDarkMode:enabled];
+	
+	return result;
+}
+%end
+
+
 //------------------------------------------------------------------------------
+
 
 %ctor {
 	@autoreleasepool {
-		DebugLogC(@"Loading SpringBoard helper...");
+		DebugLogC(@"Loaded into SpringBoard");
 		
 		// create main controller
 		dmc = [[DarkMessagesController alloc] init];

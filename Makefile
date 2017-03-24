@@ -3,13 +3,16 @@ TARGET = iphone:clang:10.2:10.0
 
 include $(THEOS)/makefiles/common.mk
 
-TWEAK_NAME = DarkMessages
-DarkMessages_FILES = Tweak.xm
-DarkMessages_CFLAGS = -fobjc-arc
+TWEAK_NAME = DarkMessages_CK DarkMessages_SB
+
+DarkMessages_CK_FILES = DarkMessages_CK.xm
+DarkMessages_CK_CFLAGS = -fobjc-arc
+
+DarkMessages_SB_FILES = DarkMessages_SB.xm DarkMessagesController.m
+DarkMessages_SB_CFLAGS = -fobjc-arc
+
 include $(THEOS_MAKE_PATH)/tweak.mk
 
-SUBPROJECTS += DarkMessages_SBHelper
-SUBPROJECTS += DarkMessages_BBHelper
 SUBPROJECTS += Settings
 include $(THEOS_MAKE_PATH)/aggregate.mk
 

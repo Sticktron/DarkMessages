@@ -1,5 +1,5 @@
 //
-//  Tweak.xm
+//  DarkMessages_CK.xm
 //  DarkMessages
 //
 //  Forces use of the dark theme found in ChatKit in iOS 10.
@@ -7,7 +7,7 @@
 //  ©2017 Sticktron
 //
 
-#define DEBUG_PREFIX @"[DarkMessages]"
+#define DEBUG_PREFIX @"[DarkMessages_CK]"
 #import "DebugLog.h"
 
 #import "DarkMessages.h"
