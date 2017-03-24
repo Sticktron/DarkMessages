@@ -78,24 +78,31 @@ static void handleRelaunchMobileSMS(CFNotificationCenterRef center, void *observ
 
 %hook CBBlueLightClient
 - (BOOL)setEnabled:(BOOL)enabled {
-	DebugLog(@"BL turning %@", enabled?@"ON":@"OFF");
+	if (dmc && dmc.nightShiftControlEnabled) {
+		BOOL result = %orig;		
+		DebugLog(@"BL turning %@", enabled?@"ON":@"OFF");
+		DebugLog(@"result = %d", result);
+		
+		[dmc setDarkMode:enabled];
+		
+		return result;
+	} else {
+		return %orig;
+	}
 	
-	BOOL result = %orig;
-	DebugLog(@"result = %d", result);
-	
-	if (dmc) [dmc setDarkMode:enabled];
-	
-	return result;
 }
 - (BOOL)setEnabled:(BOOL)enabled withOption:(int)option {
-	DebugLog(@"BL turning %@ (with option: %d)", enabled?@"ON":@"OFF", option);
-	
-	BOOL result = %orig;
-	DebugLog(@"result = %d", result);
-	
-	if (dmc) [dmc setDarkMode:enabled];
-	
-	return result;
+	if (dmc && dmc.nightShiftControlEnabled) {
+		BOOL result = %orig;
+		DebugLog(@"BL turning %@ (with option: %d)", enabled?@"ON":@"OFF", option);
+		DebugLog(@"result = %d", result);
+		
+		[dmc setDarkMode:enabled];
+		
+		return result;
+	} else {
+		return %orig;
+	}
 }
 %end
 
