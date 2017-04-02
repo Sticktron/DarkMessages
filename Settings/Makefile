@@ -1,11 +1,11 @@
 ARCHS = armv7 arm64
-TARGET = iphone:clang:9.2:10.0
+TARGET = iphone:clang:9.2:10.1
 
 include $(THEOS)/makefiles/common.mk
 
 BUNDLE_NAME = DarkMessages
 DarkMessages_CFLAGS = -fobjc-arc
-DarkMessages_FILES = DarkMessagesSettings.mm
+DarkMessages_FILES = DarkMessagesSettings.mm ../UIColor-Additions.m
 DarkMessages_INSTALL_PATH = /Library/PreferenceBundles
 DarkMessages_PRIVATE_FRAMEWORKS = Preferences
 

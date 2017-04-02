@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>title</key>
-	<string>DarkMessages</string>
+	<string></string>
 	
 	<key>items</key>
 	<array>
@@ -13,7 +13,6 @@
 			<key>cell</key>
 			<string>PSGroupCell</string>
 		</dict>
-		
 		<!-- Enabled switch -->
 		<dict>
 			<key>cell</key>
@@ -31,7 +30,7 @@
 			<key>default</key>
 			<true/>
 			<key>PostNotification</key>
-			<string>com.sticktron.darkmessages.settingschanged</string>
+			<string>com.sticktron.darkmessages.settings-changed</string>
 		</dict>
 		
 		
@@ -40,11 +39,8 @@
 			<key>cell</key>
 			<string>PSGroupCell</string>
 			<key>label</key>
-			<string>Triggers</string>
-			<key>footerText</key>
-			<string>Allow Dark Mode to be controlled automatically.</string>
+			<string>Automatic Control</string>
 		</dict>
-		
 		<!-- Night Shift -->
 		<dict>
 			<key>cell</key>
@@ -64,9 +60,8 @@
 			<key>default</key>
 			<false/>
 			<key>PostNotification</key>
-			<string>com.sticktron.darkmessages.settingschanged</string>
+			<string>com.sticktron.darkmessages.settings-changed</string>
 		</dict>
-		
 		<!-- Noctis -->
 		<dict>
 			<key>cell</key>
@@ -86,7 +81,67 @@
 			<key>default</key>
 			<false/>
 			<key>PostNotification</key>
-			<string>com.sticktron.darkmessages.settingschanged</string>
+			<string>com.sticktron.darkmessages.settings-changed</string>
+		</dict>
+		
+		
+		<!-- [] BALLOON COLORS -->
+		<dict>
+			<key>cell</key>
+			<string>PSGroupCell</string>
+			<key>label</key>
+			<string>BALLOON COLORS</string>
+		</dict>
+		<!-- Blue Balloon -->
+		<dict>
+			<key>cell</key>
+			<string>PSLinkCell</string>
+			<key>label</key>
+			<string>Outgoing (iMessage)</string>
+			<key>key</key>
+			<string>BlueBalloonColor</string>
+			<key>detail</key>
+			<string>DarkMessagesColorPicker</string>
+			<key>cellClass</key>
+			<string>DMColorPickerLinkCell</string>
+			<key>default</key>
+			<string>default</string>
+			<key>PostNotification</key>
+			<string>com.sticktron.darkmessages.settings-changed</string>
+		</dict>
+		<!-- Green Balloon -->
+		<dict>
+			<key>cell</key>
+			<string>PSLinkCell</string>
+			<key>label</key>
+			<string>Outgoing (SMS)</string>
+			<key>key</key>
+			<string>GreenBalloonColor</string>
+			<key>detail</key>
+			<string>DarkMessagesColorPicker</string>
+			<key>cellClass</key>
+			<string>DMColorPickerLinkCell</string>
+			<key>default</key>
+			<string>default</string>
+			<key>PostNotification</key>
+			<string>com.sticktron.darkmessages.settings-changed</string>
+		</dict>
+		<!-- Gray Balloon -->
+		<dict>
+			<key>cell</key>
+			<string>PSLinkCell</string>
+			<key>label</key>
+			<string>Incoming</string>
+			<key>key</key>
+			<string>GrayBalloonColor</string>
+			<key>detail</key>
+			<string>DarkMessagesColorPicker</string>
+			<key>cellClass</key>
+			<string>DMColorPickerLinkCell</string>
+			<key>default</key>
+			<string>default</string>
+			<key>PostNotification</key>
+			<string>com.sticktron.darkmessages.settings-changed</string>
 		</dict>
 		
 		
@@ -94,8 +149,9 @@
 		<dict>
 			<key>cell</key>
 			<string>PSGroupCell</string>
+			<key>label</key>
+			<string>Support</string>
 		</dict>
-		
 		<!-- File an Issue -->
 		<dict>
 			<key>cell</key>
@@ -103,13 +159,12 @@
 			<key>cellClass</key>
 			<string>DMLinkCell</string>
 			<key>label</key>
-			<string>Report A Bug</string>
+			<string>Issue Tracker</string>
 			<key>icon</key>
 			<string>issues.png</string>
 			<key>action</key>
 			<string>openGitHubIssue</string>
 		</dict>
-		
 		<!-- Email -->
 		<dict>
 			<key>cell</key>
@@ -117,60 +172,34 @@
 			<key>cellClass</key>
 			<string>DMLinkCell</string>
 			<key>label</key>
-			<string>Email Me</string>
+			<string>Send Email</string>
 			<key>icon</key>
 			<string>email.png</string>
 			<key>action</key>
 			<string>openEmail</string>
 		</dict>
 		
-		<!-- Tweet -->
-		<dict>
-			<key>cell</key>
-			<string>PSLinkCell</string>
-			<key>cellClass</key>
-			<string>DMLinkCell</string>
-			<key>label</key>
-			<string>Tweet @sticktron</string>
-			<key>icon</key>
-			<string>twitter.png</string>
-			<key>action</key>
-			<string>openTwitter</string>
-		</dict>
 		
-		
-		<!-- [] LINKS + FOOTER -->
+		<!-- [] DONATIONWARE -->
 		<dict>
 			<key>cell</key>
 			<string>PSGroupCell</string>
+			<key>label</key>
+			<string>Donationware</string>
+			<key>footerText</key>
+			<string>This software is completely free. Donations are welcome. Thank you, and enjoy :)</string>
 		</dict>
-		
-		<!-- Source Code -->
 		<dict>
 			<key>cell</key>
 			<string>PSLinkCell</string>
 			<key>cellClass</key>
 			<string>DMLinkCell</string>
 			<key>label</key>
-			<string>Source Code</string>
+			<string>Donate $1</string>
 			<key>icon</key>
-			<string>github.png</string>
+			<string>paypal.png</string>
 			<key>action</key>
-			<string>openGitHub</string>
-		</dict>
-		
-		<!-- r/jailbreak -->
-		<dict>
-			<key>cell</key>
-			<string>PSLinkCell</string>
-			<key>cellClass</key>
-			<string>DMLinkCell</string>
-			<key>label</key>
-			<string>Jailbreak Support On Reddit</string>
-			<key>icon</key>
-			<string>reddit.png</string>
-			<key>action</key>
-			<string>openReddit</string>
+			<string>openPayPal</string>
 		</dict>
 		
 		
@@ -181,7 +210,7 @@
 			<key>footerAlignment</key>
 			<string>1</string>
 			<key>footerText</key>
-			<string>© 2017
+			<string>© 2017 Sticktron
 
 😈</string>
 		</dict>

@@ -5,20 +5,29 @@
 //  ©2017 Sticktron
 //
 
-#define kPrefsPlistPath 	@"/var/mobile/Library/Preferences/com.sticktron.darkmessages.plist"
+#define kPrefsPlistPath 		@"/var/mobile/Library/Preferences/com.sticktron.darkmessages.plist"
 
-#define kNoctisAppID 		CFSTR("com.laughingquoll.noctis")
-#define kNoctisEnabledKey 	CFSTR("LQDDarkModeEnabled")
+#define kNoctisAppID 			CFSTR("com.laughingquoll.noctis")
+#define kNoctisEnabledKey 		CFSTR("LQDDarkModeEnabled")
 
-#define kSettingsChangedNotification 	CFSTR("com.sticktron.darkmessages.settingschanged")
-#define kRelaunchMobileSMSNotification 	CFSTR("com.sticktron.darkmessages.relaunchmobilesms")
+#define kSettingsChangedNotification		CFSTR("com.sticktron.darkmessages.settings-changed")
+#define kQuitMessagesNotification 			CFSTR("com.sticktron.darkmessages.please-quit-messages")
+#define kRelaunchMessagesNotification 		CFSTR("com.sticktron.darkmessages.please-relaunch-messages")
 
 
 // Private APIs
 
+@interface SpringBoard : UIApplication
+- (id)_accessibilityFrontMostApplication;
+@end
+
 @interface UIApplication (DM)
 - (BOOL)isSuspended;
 - (void)terminateWithSuccess;
+@end
+
+@interface UIImage (DM)
++ (UIImage *)imageNamed:(NSString *)name inBundle:(NSBundle *)bundle;
 @end
 
 @interface CKUITheme : NSObject
