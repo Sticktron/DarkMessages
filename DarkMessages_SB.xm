@@ -46,15 +46,16 @@ static void setDarkMode(BOOL enabled) {
 		return;
 	}
 	
-	isDark = enabled;
-	
 	// update prefs
 	NSMutableDictionary *settings = [NSMutableDictionary dictionaryWithContentsOfFile:kPrefsPlistPath];
-	settings[@"Enabled"] = [NSNumber numberWithBool:isDark];
+	settings[@"Enabled"] = [NSNumber numberWithBool:enabled];
 	DebugLogC(@"writing new setting: Enabled=%d", [settings[@"Enabled"] boolValue]);
 	[settings writeToFile:kPrefsPlistPath atomically:YES];
 	
-	applySettings();
+	CFNotificationCenterPostNotification(CFNotificationCenterGetDarwinNotifyCenter(),
+	 	kSettingsChangedNotification, NULL, NULL, true);
+		
+	// isDark = enabled;
 }
 
 static void loadSettings() {
@@ -75,17 +76,15 @@ static void loadSettings() {
 static void applySettings() {
 	DebugLogC(@"applySettings()");
 	
-	// close Messages...
-	
-	DebugLogC(@"**********   Asking Messages to quit !!!   **********");
-	
-	CFNotificationCenterPostNotification(CFNotificationCenterGetDarwinNotifyCenter(),
-	 	kQuitMessagesNotification, NULL, NULL, true);
-	
 	// close the QR popup ...
 	DebugLogC(@"**********   Asking QuickReply to quit !!!   **********");
 	closeQR();
 	
+	
+	// close Messages...
+	DebugLogC(@"**********   Asking Messages to quit !!!   **********");
+	CFNotificationCenterPostNotification(CFNotificationCenterGetDarwinNotifyCenter(),
+	 	kQuitMessagesNotification, NULL, NULL, true);
 }
 
 static void performSetupForNoctis() {
@@ -139,13 +138,15 @@ static void syncStateWithTriggers() {
 		} else {
 			setDarkMode(NO);
 		}
+	} else {
+		DebugLogC(@"both NightShift and Noctis are off");
 	}
 }
 
 static BOOL isNoctisOn() {
 	DebugLogC(@"isNoctisOn()");
 	
-	BOOL on = YES; // on by default
+	BOOL on = NO;
 	
 	CFPreferencesAppSynchronize(kNoctisAppID);
 	Boolean valid = NO;
@@ -159,10 +160,13 @@ static BOOL isNoctisOn() {
 }
 static BOOL isNightShiftOn() {
 	DebugLogC(@"isNightShiftOn()");
-
+	
+	BOOL on = NO;
+	
 	AXBackBoardServer *bbserver = [%c(AXBackBoardServer) server];
-	BOOL on = [bbserver blueLightStatusEnabled];
+	on = [bbserver blueLightStatusEnabled];
 	DebugLogC(@"NightShift is: %@", on?@"on":@"off");
+	
 	return on;
 }
 
@@ -204,7 +208,7 @@ static void killProcess(const char *name) {
 	DebugLogC(@"killProcess(%s)", name);
 	
 	pid_t pid;
-	const char* args[] = { "killall", name, NULL };
+	const char* args[] = { "killall", "-9", name, NULL };
 	posix_spawn(&pid, "/usr/bin/killall", NULL, NULL, (char* const*)args, NULL);
 }
 
@@ -268,8 +272,7 @@ static void handleRelaunchMessagesApp(CFNotificationCenterRef center, void *obse
 	
 	%orig;
 	
-	// loadSettings();
-	// syncStateWithTriggers()
+	syncStateWithTriggers();
 }
 %new
 - (void)_dm_setDarkMode:(BOOL)enabled {

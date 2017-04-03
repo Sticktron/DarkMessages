@@ -14,9 +14,9 @@
 
 #define VERSION_STRING	@"v1.2.0"
 
-#define BLUE		[UIColor colorWithRed:15/255.0 green:132/255.0 blue:252/255.0 alpha:1] //#0F84FC
+#define BLUE 		[UIColor colorWithRed:15/255.0 green:132/255.0 blue:252/255.0 alpha:1] //#0F84FC
 #define WHITE		[UIColor colorWithWhite:1 alpha:1]
-#define BLACK		[UIColor colorWithWhite:0 alpha:1]
+#define BLACK 		[UIColor colorWithWhite:0 alpha:1]
 #define GRAY_9	 	[UIColor colorWithWhite:0.09 alpha:1.0] // #171717
 #define GRAY_11 	[UIColor colorWithRed:0.11 green:0.11 blue:0.114 alpha:1.0] // #1c1c1d
 #define GRAY_20		[UIColor colorWithRed:0.196 green:0.196 blue:0.200 alpha:1.0] // #323233
@@ -24,6 +24,7 @@
 #define GRAY_50		[UIColor colorWithRed:0.49 green:0.49 blue:0.50 alpha:1.0] // #7d7d80
 #define GRAY_56		[UIColor colorWithRed:0.56 green:0.56 blue:0.58 alpha:1.0] // systemGrayColor (#8f8f94?)
 #define GRAY_78		[UIColor colorWithRed:0.78 green:0.78 blue:0.80 alpha:1.0] // systemMidGrayColor
+
 
 // Theme
 static UIColor *tintColor = GRAY_9;
@@ -37,10 +38,10 @@ static UIColor *switchKnobColor = BLACK;
 static UIColor *switchBorderColor = BLUE;
 static UIColor *chevronColor = BLUE;
 
-static float headerHeight = 140.0f;
-// static float cellHeight = 50.0f;
 
 static PSListController *controller;
+static float headerHeight = 140.0f;
+// static float cellHeight = 50.0f;
 
 
 static void handleSettingsChanged(CFNotificationCenterRef center, void *observer, CFStringRef name, const void *object, CFDictionaryRef userInfo) {
@@ -99,7 +100,6 @@ static NSString * defaultColorForKey(NSString *key) {
 	if (self = [super init]) {
 		themeStuff(@[self.class]);
 		
-		// listen for changes from helper (to update the Dark Mode switch)
 		CFNotificationCenterAddObserver(CFNotificationCenterGetDarwinNotifyCenter(),
 			NULL,
 			(CFNotificationCallback)handleSettingsChanged,
@@ -219,22 +219,24 @@ static NSString * defaultColorForKey(NSString *key) {
 
 /* Allow only one control method to be enabled at once. */
 - (void)setNoctisControlValue:(id)value specifier:(id)specifier {
-	// disable NightShift control
-	if ([value boolValue]) {
+	if ([value boolValue] == YES) {
+		// turn off NightShift control switch
 		PSSpecifier *spec = [self specifierForID:@"NightShiftControl"];
 		[self setPreferenceValue:@NO specifier:spec];
 		[self reloadSpecifier:spec animated:YES];
 	}
+	
 	// save value
 	[self setPreferenceValue:value specifier:specifier];
 }
 - (void)setNightShiftControlValue:(id)value specifier:(id)specifier {
-	// disable Noctis control
-	if ([value boolValue]) {
+	if ([value boolValue] == YES) {
+		// turn off Noctis control switch
 		PSSpecifier *spec = [self specifierForID:@"NoctisControl"];
 		[self setPreferenceValue:@NO specifier:spec];
 		[self reloadSpecifier:spec animated:YES];
 	}
+	
 	// save value
 	[self setPreferenceValue:value specifier:specifier];
 }
