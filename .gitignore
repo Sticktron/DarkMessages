@@ -1,6 +1,5 @@
-.theos
-packages
-_Materials
-clean.sh
+.theos/
+packages/
+_Materials/
 
-bak
+_Binaries/Betas/
