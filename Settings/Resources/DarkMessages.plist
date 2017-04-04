@@ -184,8 +184,6 @@
 		<dict>
 			<key>cell</key>
 			<string>PSGroupCell</string>
-			<key>label</key>
-			<string>Donationware</string>
 			<key>footerText</key>
 			<string>This software is completely free. Donations are welcome. Thank you, and enjoy :)</string>
 		</dict>

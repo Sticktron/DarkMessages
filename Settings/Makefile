@@ -5,7 +5,7 @@ include $(THEOS)/makefiles/common.mk
 
 BUNDLE_NAME = DarkMessages
 DarkMessages_CFLAGS = -fobjc-arc
-DarkMessages_FILES = DarkMessagesSettings.mm ../UIColor-Additions.m
+DarkMessages_FILES = DarkMessagesSettings.m DarkMessagesColorPicker.m DarkMessagesTheme.m ../UIColor-Additions.m
 DarkMessages_INSTALL_PATH = /Library/PreferenceBundles
 DarkMessages_PRIVATE_FRAMEWORKS = Preferences
 

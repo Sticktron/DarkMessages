@@ -197,6 +197,30 @@ static void handleQuitMessages(CFNotificationCenterRef center, void *observer, C
 		return %orig;
 	}
 }
+- (id)blue_balloonTextColor {
+	if (isDark && blueBalloonColor && ![blueBalloonColor isEqualToString:@"default"]) {
+		UIColor *balloonColor = [UIColor colorFromHexString:blueBalloonColor];
+		return ([balloonColor isLightColor]) ? UIColor.blackColor : UIColor.whiteColor;
+	} else {
+		return %orig;
+	}
+}
+- (id)green_balloonTextColor {
+	if (isDark && greenBalloonColor && ![greenBalloonColor isEqualToString:@"default"]) {
+		UIColor *balloonColor = [UIColor colorFromHexString:greenBalloonColor];
+		return ([balloonColor isLightColor]) ? UIColor.blackColor : UIColor.whiteColor;
+	} else {
+		return %orig;
+	}
+}
+- (id)gray_balloonTextColor {
+	if (isDark && grayBalloonColor && ![grayBalloonColor isEqualToString:@"default"]) {
+		UIColor *balloonColor = [UIColor colorFromHexString:grayBalloonColor];
+		return ([balloonColor isLightColor]) ? UIColor.blackColor : UIColor.whiteColor;
+	} else {
+		return %orig;
+	}
+}
 %end
 
 

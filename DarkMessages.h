@@ -30,12 +30,20 @@
 + (UIImage *)imageNamed:(NSString *)name inBundle:(NSBundle *)bundle;
 @end
 
+@interface UIColor (DM)
+- (float)_luminance;
++ (float)_luminanceWithRed:(float)arg1 green:(float)arg2 blue:(float)arg3;
+@end
+
 @interface CKUITheme : NSObject
 @end
 
 @interface CKUIThemeDark : CKUITheme
 - (UIColor *)entryFieldButtonColor;
 - (UIColor *)entryFieldDarkStyleButtonColor;
+- (id)blue_balloonColors;
+- (id)green_balloonColors;
+- (id)gray_balloonColors;
 @end
 
 @interface NightModeControl : NSObject // from CoreBrightness

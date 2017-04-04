@@ -1,24 +1,9 @@
 Package: com.sticktron.darkmessages
-Name: DarkMessages Beta (iOS 10)
+Name: DarkMessages (iOS 10)
 Depends: firmware (>= 10.0), mobilesubstrate, preferenceloader
-Version: 1.1.3~b5-1
+Version: 1.2.0
 Architecture: iphoneos-arm
-Description: Dark mode for the Messages app.
- [Change Log]
- v1.1.3~b5
- + NightShift control supports Yalu1011 jailbreak
- _
- v1.1.3~b4
- + Quick Reply wasn't dying the death I had hoped for
- v1.1.3~b3
- + fixed a goof with prefs introduced in beta 2
- v1.1.3~b2
- + Quick Reply changes to and from dark mode as expected
- + better NightShift support
- v1.1.3~b1
- + Quick Reply is now themed
- + handle changing mode when Messages is open more gracefully
- + better Noctis and NightShift control behaviour
+Description: Dark theme for Messages app!
 Maintainer: Sticktron <sticktron@hotmail.com>
 Author: Sticktron <sticktron@hotmail.com>
 Section: Tweaks
