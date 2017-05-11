@@ -7,9 +7,7 @@ Dark Mode for the Messages App (iOS 10)
 ![Supported Devices](https://img.shields.io/badge/devices-iPhone,_iPad,_iPod_Touch-lightgrey.svg)]
 [![GitHub Issues](https://img.shields.io/github/issues/sticktron/darkmessages.svg)](https://github.com/sticktron/darkmessages/issues)
 
-
-![Screenshot](https://cloud.githubusercontent.com/assets/442549/24665039/3202f432-192a-11e7-8347-1f55b161a237.jpg)
-
+<img src="https://cloud.githubusercontent.com/assets/442549/22517064/e6e9b114-e875-11e6-8e4d-57e01c2d6e10.jpg" alt="Screenshot" width="480">
 
 ## Compatibility
 
