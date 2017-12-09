@@ -46,14 +46,19 @@
 - (id)gray_balloonColors;
 @end
 
+@interface CNContactStyle : NSObject
+@property (nonatomic, retain) UIColor *backgroundColor;
+@property (nonatomic, retain) UIColor *headerBackgroundColor;
+@property (nonatomic, retain) UIColor *contactHeaderBackgroundColor;
++ (id)darkStyle;
+@end
+
 @interface NightModeControl : NSObject // from CoreBrightness
 - (void)enableBlueLightReduction:(BOOL)arg1 withOption:(int)arg2;
 @end
 
 @interface CBBlueLightClient : NSObject
 + (BOOL)supportsBlueLightReduction;
-- (BOOL)setEnabled:(BOOL)arg1;
-- (BOOL)setEnabled:(BOOL)arg1 withOption:(int)arg2;
 @end
 
 @interface AXBackBoardServer : NSObject
