@@ -200,6 +200,23 @@ static void handleQuitMessages(CFNotificationCenterRef center, void *observer, C
 %end
 
 
+// Contacts
+%hook CNContactStyle
+
++ (id)currentStyle {
+	return [%c(CNContactStyle) darkStyle];
+}
+
++ (id)darkStyle {
+	CNContactStyle *style = %orig;
+	style.backgroundColor = style.headerBackgroundColor;
+	style.contactHeaderBackgroundColor = style.headerBackgroundColor;
+	return style;
+}
+
+%end
+
+
 //------------------------------------------------------------------------------
 
 
