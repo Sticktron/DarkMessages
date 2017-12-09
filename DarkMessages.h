@@ -40,7 +40,7 @@
 
 @interface CKUIThemeDark : CKUITheme
 - (UIColor *)entryFieldButtonColor;
-- (UIColor *)entryFieldDarkStyleButtonColor;
+- (UIColor *)entryFieldGrayColor;
 - (id)blue_balloonColors;
 - (id)green_balloonColors;
 - (id)gray_balloonColors;

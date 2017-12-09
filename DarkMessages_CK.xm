@@ -145,7 +145,7 @@ static void handleQuitMessages(CFNotificationCenterRef center, void *observer, C
 %hook CKMessageEntryView
 - (UILabel *)collpasedPlaceholderLabel {
 	UILabel *label = %orig;
-	label.textColor = [darkTheme entryFieldDarkStyleButtonColor];
+	label.textColor = [darkTheme entryFieldGrayColor];
 	return label;
 }
 %end
