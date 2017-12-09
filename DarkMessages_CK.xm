@@ -90,115 +90,91 @@ static void handleQuitMessages(CFNotificationCenterRef center, void *observer, C
 
 %hook CKUIBehaviorPhone
 - (id)theme {
-	return isDark ? darkTheme : %orig;
+	return darkTheme;
 }
 %end
 
 %hook CKUIBehaviorPad
 - (id)theme {
-	return isDark ? darkTheme : %orig;
+	return darkTheme;
 }
 %end
 
 // fix navbar: style
 %hook CKAvatarNavigationBar
 - (void)_setBarStyle:(int)style {
-	if (isDark) {
-		%orig(1);
-	} else {
-		%orig;
-	}
+	%orig(1);
 }
 %end
 
 // fix navbar: contact names
 %hook CKAvatarContactNameCollectionReusableView
 - (void)setStyle:(int)style {
-	if (isDark) {
-		%orig(3);
-	} else {
-		%orig;
-	}
+	%orig(3);
 }
 %end
 
 // fix navbar: group names
 %hook CKAvatarTitleCollectionReusableView
 - (void)setStyle:(int)style {
-	if (isDark) {
-		%orig(3);
-	} else {
-		%orig;
-	}
+	%orig(3);
 }
 %end
 
 // fix navbar: new message label
 %hook CKNavigationBarCanvasView
 - (id)titleView {
-	if (isDark) {
-		id tv = %orig;
-		if (tv && [tv respondsToSelector:@selector(setTextColor:)]) {
-			[(UILabel *)tv setTextColor:UIColor.whiteColor];
-		}
-		return tv;
-	} else {
-		return %orig;
+	id tv = %orig;
+	if (tv && [tv respondsToSelector:@selector(setTextColor:)]) {
+		[(UILabel *)tv setTextColor:UIColor.whiteColor];
 	}
+	return tv;
 }
 %end
 
 // fix group details: contact names
 %hook CKDetailsContactsTableViewCell
 - (UILabel *)nameLabel {
-	if (isDark) {
-		UILabel *nl = %orig;
-		nl.textColor = UIColor.whiteColor;
-		return nl;
-	} else {
-		return %orig;
-	}
+	UILabel *nl = %orig;
+	nl.textColor = UIColor.whiteColor;
+	return nl;
 }
 %end
 
 // fix message entry inactive color
 %hook CKMessageEntryView
 - (UILabel *)collpasedPlaceholderLabel {
-	if (isDark) {
-		UILabel *label = %orig;
-		label.textColor = [darkTheme entryFieldDarkStyleButtonColor];
-		return label;
-	} else {
-		return %orig;
-	}
+	UILabel *label = %orig;
+	label.textColor = [darkTheme entryFieldDarkStyleButtonColor];
+	return label;
 }
 %end
 
 // change chat bubble colors
 %hook CKUIThemeDark
 - (id)blue_balloonColors {
-	if (isDark && blueBalloonColor && ![blueBalloonColor isEqualToString:@"default"]) {
+	if (blueBalloonColor && ![blueBalloonColor isEqualToString:@"default"]) {
 		return @[ [UIColor colorFromHexString:blueBalloonColor] ];
 	} else {
 		return %orig;
 	}
 }
 - (id)green_balloonColors {
-	if (isDark && greenBalloonColor && ![greenBalloonColor isEqualToString:@"default"]) {
+	if (greenBalloonColor && ![greenBalloonColor isEqualToString:@"default"]) {
 		return @[ [UIColor colorFromHexString:greenBalloonColor], [UIColor colorFromHexString:greenBalloonColor]];
 	} else {
 		return %orig;
 	}
 }
 - (id)gray_balloonColors {
-	if (isDark && grayBalloonColor && ![grayBalloonColor isEqualToString:@"default"]) {
+	if (grayBalloonColor && ![grayBalloonColor isEqualToString:@"default"]) {
 		return @[ [UIColor colorFromHexString:grayBalloonColor], [UIColor colorFromHexString:grayBalloonColor] ];
 	} else {
 		return %orig;
 	}
 }
 - (id)blue_balloonTextColor {
-	if (isDark && blueBalloonColor && ![blueBalloonColor isEqualToString:@"default"]) {
+	if (blueBalloonColor && ![blueBalloonColor isEqualToString:@"default"]) {
 		UIColor *balloonColor = [UIColor colorFromHexString:blueBalloonColor];
 		return ([balloonColor isLightColor]) ? UIColor.blackColor : UIColor.whiteColor;
 	} else {
@@ -206,7 +182,7 @@ static void handleQuitMessages(CFNotificationCenterRef center, void *observer, C
 	}
 }
 - (id)green_balloonTextColor {
-	if (isDark && greenBalloonColor && ![greenBalloonColor isEqualToString:@"default"]) {
+	if (greenBalloonColor && ![greenBalloonColor isEqualToString:@"default"]) {
 		UIColor *balloonColor = [UIColor colorFromHexString:greenBalloonColor];
 		return ([balloonColor isLightColor]) ? UIColor.blackColor : UIColor.whiteColor;
 	} else {
@@ -214,7 +190,7 @@ static void handleQuitMessages(CFNotificationCenterRef center, void *observer, C
 	}
 }
 - (id)gray_balloonTextColor {
-	if (isDark && grayBalloonColor && ![grayBalloonColor isEqualToString:@"default"]) {
+	if (grayBalloonColor && ![grayBalloonColor isEqualToString:@"default"]) {
 		UIColor *balloonColor = [UIColor colorFromHexString:grayBalloonColor];
 		return ([balloonColor isLightColor]) ? UIColor.blackColor : UIColor.whiteColor;
 	} else {
@@ -234,8 +210,11 @@ static void handleQuitMessages(CFNotificationCenterRef center, void *observer, C
 		
 		loadSettings();
 		
-		darkTheme = [[%c(CKUIThemeDark) alloc] init];
-		%init;
+		// only execute hooks if dark mode is active
+		if (isDark) {
+			darkTheme = [[%c(CKUIThemeDark) alloc] init];
+			%init;
+		}
 		
 		// listen for requests from SpringBoard to prompt user to restart Messages
 		CFNotificationCenterAddObserver(CFNotificationCenterGetDarwinNotifyCenter(),
