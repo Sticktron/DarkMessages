@@ -296,26 +296,13 @@ static void handleRelaunchMessagesApp(CFNotificationCenterRef center, void *obse
 %end
 
 // Night Shift detection
-%hook CBBlueLightClient
-- (BOOL)setEnabled:(BOOL)enabled {
-	BOOL result = %orig;
-	DebugLog(@"NightShift turned %@ (success=%d)", enabled?@"ON":@"OFF", result);
-	
-	if (nightShiftControlEnabled) {
-		setDarkMode(enabled);
-	}
-	
-	return result;
-}
-- (BOOL)setEnabled:(BOOL)enabled withOption:(int)option {
-	BOOL result = %orig;
-	DebugLog(@"NightShift turned %@ with option:%d (success=%d)", enabled?@"ON":@"OFF", option, result);
-	
-	if (nightShiftControlEnabled) {
-		setDarkMode(enabled);
-	}
-	
-	return result;
+%hook BrightnessSystemClientExportedObj
+- (void)notifyChangedProperty:(NSString *)key value:(NSDictionary *)dict {
+    %orig;
+    if (nightShiftControlEnabled &&
+    	[key isEqualToString:@"CBBlueReductionStatus"] && dict[@"BlueReductionEnabled"]) {
+            setDarkMode([dict[@"BlueReductionEnabled"] boolValue]);
+    }
 }
 %end
 
